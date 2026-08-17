@@ -1,0 +1,1754 @@
+{
+  "admin-faisal@gmail.com": {
+    "name": "admin faisal",
+    "email": "admin-faisal@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "16:11:28",
+        "last_check_out": "16:11:24",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 16:11:28 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-out في 16:11:24",
+          "تسجيل خروج في 16:11:24",
+          "check-in في 16:11:28",
+          "تسجيل دخول في 16:11:28"
+        ]
+      }
+    ]
+  },
+  "f@gmail.com": {
+    "name": "faisal ahmad",
+    "email": "f@gmail.com",
+    "role": "employee",
+    "total_days_logged": 4,
+    "total_late_days": 4,
+    "total_severe_late_days": 2,
+    "salary_deductions_half_days": 2,
+    "max_consecutive_late_days": 4,
+    "warnings": [
+      "تأخير لأكثر من 3 أيام متتالية (بلغت 4 أيام متتالية) -> يخضع للخصم المالي والإنذار الرسمي حسب البند 2"
+    ],
+    "daily_details": [
+      {
+        "date": "2026-07-19",
+        "first_check_in": "14:55:08",
+        "last_check_out": "15:01:26",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:55:08 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:55:08",
+          "تسجيل دخول في 14:55:08",
+          "check-out في 14:55:17",
+          "تسجيل خروج في 14:55:17",
+          "check-in في 14:55:21",
+          "تسجيل دخول في 14:55:21",
+          "check-in في 14:55:25",
+          "تسجيل دخول في 14:55:25",
+          "check-in في 15:01:20",
+          "تسجيل دخول في 15:01:20",
+          "check-out في 15:01:26",
+          "تسجيل خروج في 15:01:26",
+          "check-in في 15:01:38",
+          "تسجيل دخول في 15:01:38",
+          "check-in في 15:02:27",
+          "تسجيل دخول في 15:02:27"
+        ]
+      },
+      {
+        "date": "2026-07-21",
+        "first_check_in": "09:29:33",
+        "last_check_out": "12:06:52",
+        "status": "تأخير بسيط (ضمن المهلة المسموحة للتأخير 15-60 دقيقة)",
+        "note": "تم تسجيل الدخول الساعة 09:29:33 (بعد فترة السماح 09:15 AM)",
+        "all_logs": [
+          "check-in في 09:29:33",
+          "تسجيل دخول في 09:29:33",
+          "check-in في 10:16:35",
+          "تسجيل دخول في 10:16:35",
+          "check-in في 10:37:44",
+          "تسجيل دخول في 10:37:44",
+          "check-in في 10:37:45",
+          "تسجيل دخول في 10:37:45",
+          "check-in في 11:38:47",
+          "تسجيل دخول في 11:38:47",
+          "check-out في 11:38:48",
+          "تسجيل خروج في 11:38:48",
+          "check-in في 11:39:54",
+          "تسجيل دخول في 11:39:54",
+          "check-in في 12:05:06",
+          "تسجيل دخول في 12:05:06",
+          "check-in في 12:05:08",
+          "تسجيل دخول في 12:05:08",
+          "check-out في 12:05:10",
+          "تسجيل خروج في 12:05:10",
+          "check-in في 12:06:51",
+          "تسجيل دخول في 12:06:51",
+          "check-out في 12:06:52",
+          "تسجيل خروج في 12:06:52",
+          "check-in في 12:34:14",
+          "تسجيل دخول في 12:34:14"
+        ]
+      },
+      {
+        "date": "2026-07-27",
+        "first_check_in": "10:03:24",
+        "last_check_out": "13:52:39",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 10:03:24 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 10:03:24",
+          "check-out في 13:52:39",
+          "تسجيل خروج في 13:52:39"
+        ]
+      },
+      {
+        "date": "2026-07-29",
+        "first_check_in": "09:39:33",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير بسيط (ضمن المهلة المسموحة للتأخير 15-60 دقيقة)",
+        "note": "تم تسجيل الدخول الساعة 09:39:33 (بعد فترة السماح 09:15 AM)",
+        "all_logs": [
+          "check-in في 09:39:33"
+        ]
+      }
+    ]
+  },
+  "a@gmail.com": {
+    "name": "ahmad khalil",
+    "email": "a@gmail.com",
+    "role": "employee",
+    "total_days_logged": 4,
+    "total_late_days": 4,
+    "total_severe_late_days": 2,
+    "salary_deductions_half_days": 2,
+    "max_consecutive_late_days": 4,
+    "warnings": [
+      "تأخير لأكثر من 3 أيام متتالية (بلغت 4 أيام متتالية) -> يخضع للخصم المالي والإنذار الرسمي حسب البند 2"
+    ],
+    "daily_details": [
+      {
+        "date": "2026-07-19",
+        "first_check_in": "14:56:35",
+        "last_check_out": "15:42:25",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:56:35 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:56:35",
+          "تسجيل دخول في 14:56:35",
+          "check-in في 15:00:57",
+          "تسجيل دخول في 15:00:57",
+          "check-in في 15:01:00",
+          "تسجيل دخول في 15:01:00",
+          "check-in في 15:28:01",
+          "تسجيل دخول في 15:28:01",
+          "check-out في 15:28:07",
+          "تسجيل خروج في 15:28:07",
+          "check-in في 15:28:22",
+          "تسجيل دخول في 15:28:22",
+          "check-out في 15:28:29",
+          "تسجيل خروج في 15:28:29",
+          "check-in في 15:39:07",
+          "تسجيل دخول في 15:39:07",
+          "check-in في 15:42:21",
+          "تسجيل دخول في 15:42:21",
+          "check-out في 15:42:22",
+          "تسجيل خروج في 15:42:22",
+          "check-in في 15:42:24",
+          "تسجيل دخول في 15:42:24",
+          "check-out في 15:42:25",
+          "تسجيل خروج في 15:42:25"
+        ]
+      },
+      {
+        "date": "2026-07-21",
+        "first_check_in": "09:32:15",
+        "last_check_out": "11:11:42",
+        "status": "تأخير بسيط (ضمن المهلة المسموحة للتأخير 15-60 دقيقة)",
+        "note": "تم تسجيل الدخول الساعة 09:32:15 (بعد فترة السماح 09:15 AM)",
+        "all_logs": [
+          "check-in في 09:32:15",
+          "تسجيل دخول في 09:32:15",
+          "check-out في 09:32:23",
+          "تسجيل خروج في 09:32:23",
+          "check-in في 09:33:08",
+          "تسجيل دخول في 09:33:08",
+          "check-in في 09:33:09",
+          "تسجيل دخول في 09:33:09",
+          "check-out في 09:33:10",
+          "تسجيل خروج في 09:33:10",
+          "check-in في 11:11:40",
+          "تسجيل دخول في 11:11:40",
+          "check-in في 11:11:41",
+          "تسجيل دخول في 11:11:41",
+          "check-out في 11:11:42",
+          "تسجيل خروج في 11:11:42",
+          "check-in في 11:16:19",
+          "تسجيل دخول في 11:16:19"
+        ]
+      },
+      {
+        "date": "2026-07-27",
+        "first_check_in": "16:10:10",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 16:10:10 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 16:10:10",
+          "تسجيل دخول في 16:10:10"
+        ]
+      },
+      {
+        "date": "2026-07-29",
+        "first_check_in": "09:49:53",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير بسيط (ضمن المهلة المسموحة للتأخير 15-60 دقيقة)",
+        "note": "تم تسجيل الدخول الساعة 09:49:53 (بعد فترة السماح 09:15 AM)",
+        "all_logs": [
+          "check-in في 09:49:53"
+        ]
+      }
+    ]
+  },
+  "alaa@gmail.com": {
+    "name": "alaa ahmad",
+    "email": "alaa@gmail.com",
+    "role": "employee",
+    "total_days_logged": 3,
+    "total_late_days": 3,
+    "total_severe_late_days": 3,
+    "salary_deductions_half_days": 3,
+    "max_consecutive_late_days": 3,
+    "warnings": [
+      "تأخير لأكثر من 3 أيام متتالية (بلغت 3 أيام متتالية) -> يخضع للخصم المالي والإنذار الرسمي حسب البند 2"
+    ],
+    "daily_details": [
+      {
+        "date": "2026-07-19",
+        "first_check_in": "15:51:48",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:51:48 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:51:48",
+          "تسجيل دخول في 15:51:48"
+        ]
+      },
+      {
+        "date": "2026-07-21",
+        "first_check_in": "10:38:03",
+        "last_check_out": "11:16:57",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 10:38:03 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 10:38:03",
+          "تسجيل دخول في 10:38:03",
+          "check-out في 10:38:20",
+          "تسجيل خروج في 10:38:20",
+          "check-out في 10:38:22",
+          "تسجيل خروج في 10:38:22",
+          "check-in في 10:39:40",
+          "تسجيل دخول في 10:39:40",
+          "check-in في 11:16:35",
+          "تسجيل دخول في 11:16:35",
+          "check-out في 11:16:37",
+          "تسجيل خروج في 11:16:37",
+          "check-in في 11:16:51",
+          "تسجيل دخول في 11:16:51",
+          "check-in في 11:16:52",
+          "تسجيل دخول في 11:16:52",
+          "check-in في 11:16:53",
+          "تسجيل دخول في 11:16:53",
+          "check-out في 11:16:55",
+          "تسجيل خروج في 11:16:55",
+          "check-out في 11:16:56",
+          "تسجيل خروج في 11:16:56",
+          "check-out في 11:16:57",
+          "تسجيل خروج في 11:16:57"
+        ]
+      },
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:38:45",
+        "last_check_out": "16:19:45",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:38:45 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:38:45",
+          "تسجيل دخول في 14:38:45",
+          "check-out في 16:19:45",
+          "تسجيل خروج في 16:19:45"
+        ]
+      }
+    ]
+  },
+  "yousef@gmail.com": {
+    "name": "yousef mohammed",
+    "email": "yousef@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "11:01:26",
+        "last_check_out": "11:40:33",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 11:01:26 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 11:01:26",
+          "تسجيل دخول في 11:01:26",
+          "check-out في 11:03:11",
+          "تسجيل خروج في 11:03:11",
+          "check-out في 11:03:12",
+          "تسجيل خروج في 11:03:12",
+          "check-out في 11:03:13",
+          "تسجيل خروج في 11:03:13",
+          "check-in في 11:40:29",
+          "تسجيل دخول في 11:40:29",
+          "check-out في 11:40:31",
+          "تسجيل خروج في 11:40:31",
+          "check-out في 11:40:33",
+          "تسجيل خروج في 11:40:33"
+        ]
+      }
+    ]
+  },
+  "e@gmail.com": {
+    "name": "e@gmail.cim",
+    "email": "e@gmail.com",
+    "role": "employee",
+    "total_days_logged": 2,
+    "total_late_days": 2,
+    "total_severe_late_days": 2,
+    "salary_deductions_half_days": 2,
+    "max_consecutive_late_days": 2,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-19",
+        "first_check_in": "15:42:51",
+        "last_check_out": "15:42:53",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:42:51 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:42:51",
+          "تسجيل دخول في 15:42:51",
+          "check-out في 15:42:53",
+          "تسجيل خروج في 15:42:53",
+          "check-in في 15:42:56",
+          "تسجيل دخول في 15:42:56",
+          "check-in في 15:42:57",
+          "تسجيل دخول في 15:42:57",
+          "check-in في 15:42:58",
+          "تسجيل دخول في 15:42:58"
+        ]
+      },
+      {
+        "date": "2026-07-21",
+        "first_check_in": "10:48:59",
+        "last_check_out": "13:34:55",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 10:48:59 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 10:48:59",
+          "تسجيل دخول في 10:48:59",
+          "check-out في 13:34:55",
+          "تسجيل خروج في 13:34:55"
+        ]
+      }
+    ]
+  },
+  "en@gmail.com": {
+    "name": "enAI",
+    "email": "en@gmail.com",
+    "role": "employee",
+    "total_days_logged": 2,
+    "total_late_days": 2,
+    "total_severe_late_days": 2,
+    "salary_deductions_half_days": 2,
+    "max_consecutive_late_days": 2,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "13:58:45",
+        "last_check_out": "14:00:17",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:58:45 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:58:45",
+          "تسجيل دخول في 13:58:45",
+          "check-out في 14:00:09",
+          "تسجيل خروج في 14:00:09",
+          "check-in في 14:00:12",
+          "تسجيل دخول في 14:00:12",
+          "check-in في 14:00:14",
+          "تسجيل دخول في 14:00:14",
+          "check-in في 14:00:15",
+          "تسجيل دخول في 14:00:15",
+          "check-in في 14:00:16",
+          "check-out في 14:00:16",
+          "تسجيل دخول في 14:00:16",
+          "تسجيل خروج في 14:00:16",
+          "check-out في 14:00:17",
+          "تسجيل خروج في 14:00:17",
+          "check-in في 14:00:18",
+          "تسجيل دخول في 14:00:18",
+          "check-in في 14:00:19",
+          "تسجيل دخول في 14:00:19",
+          "check-in في 14:00:20",
+          "تسجيل دخول في 14:00:20",
+          "check-in في 14:23:59",
+          "تسجيل دخول في 14:23:59"
+        ]
+      },
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:09:02",
+        "last_check_out": "14:11:09",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:09:02 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:09:02",
+          "تسجيل دخول في 14:09:02",
+          "check-out في 14:11:09",
+          "تسجيل خروج في 14:11:09"
+        ]
+      }
+    ]
+  },
+  "bu@gmail.com": {
+    "name": " bush",
+    "email": "bu@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "14:32:15",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:32:15 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:32:15",
+          "تسجيل دخول في 14:32:15"
+        ]
+      }
+    ]
+  },
+  "emp_41144@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_41144@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "faisal2004@gmail.com": {
+    "name": "فيصل احمد الرواضية",
+    "email": "faisal2004@gmail.com",
+    "role": "employee",
+    "total_days_logged": 2,
+    "total_late_days": 2,
+    "total_severe_late_days": 2,
+    "salary_deductions_half_days": 2,
+    "max_consecutive_late_days": 2,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "15:22:49",
+        "last_check_out": "15:23:56",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:22:49 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:22:49",
+          "تسجيل دخول في 15:22:49",
+          "check-out في 15:23:56",
+          "تسجيل خروج في 15:23:56"
+        ]
+      },
+      {
+        "date": "2026-07-27",
+        "first_check_in": "13:04:28",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:04:28 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:04:28",
+          "تسجيل دخول في 13:04:28"
+        ]
+      }
+    ]
+  },
+  "emp_31125@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_31125@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_80346@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_80346@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_58056@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_58056@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_56150@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_56150@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "anas@gmail.com": {
+    "name": "anas-ahmad",
+    "email": "anas@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:12:35",
+        "last_check_out": "15:14:27",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:12:35 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:12:35",
+          "تسجيل دخول في 15:12:35",
+          "check-out في 15:14:27",
+          "تسجيل خروج في 15:14:27"
+        ]
+      }
+    ]
+  },
+  "emp_50848@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_50848@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_67675@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_67675@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_73527@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_73527@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_96557@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_96557@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_56775@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_56775@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_57876@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_57876@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_27050@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_27050@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_31580@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_31580@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_77853@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_77853@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_40571@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_40571@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_73789@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_73789@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_10491@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_10491@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_71442@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_71442@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_89039@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_89039@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_29282@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_29282@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_21115@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_21115@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_99760@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_99760@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_81444@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_81444@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_51678@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_51678@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_13791@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_13791@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_66278@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_66278@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_13223@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_13223@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_98950@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_98950@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_54737@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_54737@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_58471@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_58471@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "emp_91394@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_91394@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "omar@gmail.com": {
+    "name": "omar",
+    "email": "omar@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:56:01",
+        "last_check_out": "15:56:08",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:56:01 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:56:01",
+          "تسجيل دخول في 15:56:01",
+          "check-out في 15:56:08",
+          "تسجيل خروج في 15:56:08"
+        ]
+      }
+    ]
+  },
+  "emp_28081@nexuslink.com": {
+    "name": "New Test Employee",
+    "email": "emp_28081@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 0,
+    "total_late_days": 0,
+    "total_severe_late_days": 0,
+    "salary_deductions_half_days": 0,
+    "max_consecutive_late_days": 0,
+    "warnings": [],
+    "daily_details": []
+  },
+  "test_user@nexuslink.com": {
+    "name": "غير معروف",
+    "email": "test_user@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "11:54:25",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 11:54:25 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 11:54:25",
+          "تسجيل دخول في 11:54:25",
+          "check-in في 11:57:16",
+          "تسجيل دخول في 11:57:16",
+          "check-in في 12:02:32",
+          "تسجيل دخول في 12:02:32",
+          "check-in في 12:30:48",
+          "تسجيل دخول في 12:30:48",
+          "check-in في 12:31:26",
+          "تسجيل دخول في 12:31:26"
+        ]
+      }
+    ]
+  },
+  "test_user_10397@nexuslink.com": {
+    "name": "غير معروف",
+    "email": "test_user_10397@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "13:02:50",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:02:50 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:02:50",
+          "تسجيل دخول في 13:02:50"
+        ]
+      }
+    ]
+  },
+  "test_user_93636@nexuslink.com": {
+    "name": "غير معروف",
+    "email": "test_user_93636@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "13:12:00",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:12:00 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:12:00",
+          "تسجيل دخول في 13:12:00"
+        ]
+      }
+    ]
+  },
+  "test_user_28501@nexuslink.com": {
+    "name": "غير معروف",
+    "email": "test_user_28501@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "13:16:34",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:16:34 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:16:34",
+          "تسجيل دخول في 13:16:34"
+        ]
+      }
+    ]
+  },
+  "test_user_13208@nexuslink.com": {
+    "name": "غير معروف",
+    "email": "test_user_13208@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "13:20:56",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:20:56 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:20:56",
+          "تسجيل دخول في 13:20:56"
+        ]
+      }
+    ]
+  },
+  "test_user_51450@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_51450@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "14:26:49",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:26:49 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:26:49",
+          "تسجيل دخول في 14:26:49"
+        ]
+      }
+    ]
+  },
+  "test_user_22376@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_22376@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-21",
+        "first_check_in": "15:20:08",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:20:08 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:20:08",
+          "تسجيل دخول في 15:20:08"
+        ]
+      }
+    ]
+  },
+  "test_user_28386@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_28386@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "13:42:39",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:42:39 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:42:39",
+          "تسجيل دخول في 13:42:39"
+        ]
+      }
+    ]
+  },
+  "test_user_54588@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_54588@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "13:46:26",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:46:26 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:46:26",
+          "تسجيل دخول في 13:46:26"
+        ]
+      }
+    ]
+  },
+  "test_user_18579@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_18579@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "13:48:30",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:48:30 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:48:30",
+          "تسجيل دخول في 13:48:30"
+        ]
+      }
+    ]
+  },
+  "test_user_48534@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_48534@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "13:50:35",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 13:50:35 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 13:50:35",
+          "تسجيل دخول في 13:50:35"
+        ]
+      }
+    ]
+  },
+  "test_user_70622@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_70622@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:28:30",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:28:30 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:28:30",
+          "تسجيل دخول في 14:28:30"
+        ]
+      }
+    ]
+  },
+  "test_user_12830@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_12830@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:37:11",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:37:11 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:37:11",
+          "تسجيل دخول في 14:37:11"
+        ]
+      }
+    ]
+  },
+  "test_user_36783@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_36783@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:47:37",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:47:37 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:47:37",
+          "تسجيل دخول في 14:47:37"
+        ]
+      }
+    ]
+  },
+  "test_user_32779@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_32779@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:50:13",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:50:13 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:50:13",
+          "تسجيل دخول في 14:50:13"
+        ]
+      }
+    ]
+  },
+  "test_user_82384@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_82384@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:52:19",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:52:19 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:52:19",
+          "تسجيل دخول في 14:52:19"
+        ]
+      }
+    ]
+  },
+  "test_user_55445@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_55445@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:55:33",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:55:33 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:55:33",
+          "تسجيل دخول في 14:55:33"
+        ]
+      }
+    ]
+  },
+  "test_user_28200@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_28200@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "14:58:08",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 14:58:08 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 14:58:08",
+          "تسجيل دخول في 14:58:08"
+        ]
+      }
+    ]
+  },
+  "test_user_76431@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_76431@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:00:23",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:00:23 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:00:23",
+          "تسجيل دخول في 15:00:23"
+        ]
+      }
+    ]
+  },
+  "test_user_45170@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_45170@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:04:16",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:04:16 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:04:16",
+          "تسجيل دخول في 15:04:16"
+        ]
+      }
+    ]
+  },
+  "test_user_83142@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_83142@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:06:41",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:06:41 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:06:41",
+          "تسجيل دخول في 15:06:41"
+        ]
+      }
+    ]
+  },
+  "test_user_46000@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_46000@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:08:16",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:08:16 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:08:16",
+          "تسجيل دخول في 15:08:16"
+        ]
+      }
+    ]
+  },
+  "test_user_92308@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_92308@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:10:19",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:10:19 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:10:19",
+          "تسجيل دخول في 15:10:19"
+        ]
+      }
+    ]
+  },
+  "test_user_40314@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_40314@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:11:46",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:11:46 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:11:46",
+          "تسجيل دخول في 15:11:46"
+        ]
+      }
+    ]
+  },
+  "feefdcs@gmail.com": {
+    "name": "ddddddddddddddddd",
+    "email": "feefdcs@gmail.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:12:57",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:12:57 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:12:57",
+          "تسجيل دخول في 15:12:57"
+        ]
+      }
+    ]
+  },
+  "test_user_77768@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_77768@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:17:02",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:17:02 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:17:02",
+          "تسجيل دخول في 15:17:02"
+        ]
+      }
+    ]
+  },
+  "test_user_80578@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_80578@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:24:43",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:24:43 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:24:43",
+          "تسجيل دخول في 15:24:43"
+        ]
+      }
+    ]
+  },
+  "test_user_90898@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_90898@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:29:57",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:29:57 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:29:57",
+          "تسجيل دخول في 15:29:57"
+        ]
+      }
+    ]
+  },
+  "test_user_47457@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_47457@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:33:41",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:33:41 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:33:41",
+          "تسجيل دخول في 15:33:41"
+        ]
+      }
+    ]
+  },
+  "test_user_37287@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_37287@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:38:48",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:38:48 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:38:48",
+          "تسجيل دخول في 15:38:48"
+        ]
+      }
+    ]
+  },
+  "test_user_45961@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_45961@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:42:35",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:42:35 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:42:35",
+          "تسجيل دخول في 15:42:35"
+        ]
+      }
+    ]
+  },
+  "test_user_79354@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_79354@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:45:00",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:45:00 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:45:00",
+          "تسجيل دخول في 15:45:00"
+        ]
+      }
+    ]
+  },
+  "test_user_14337@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_14337@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:49:07",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:49:07 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:49:07",
+          "تسجيل دخول في 15:49:07"
+        ]
+      }
+    ]
+  },
+  "test_user_13845@nexuslink.com": {
+    "name": "Test User",
+    "email": "test_user_13845@nexuslink.com",
+    "role": "employee",
+    "total_days_logged": 1,
+    "total_late_days": 1,
+    "total_severe_late_days": 1,
+    "salary_deductions_half_days": 1,
+    "max_consecutive_late_days": 1,
+    "warnings": [],
+    "daily_details": [
+      {
+        "date": "2026-07-27",
+        "first_check_in": "15:52:08",
+        "last_check_out": "لم يسجل",
+        "status": "تأخير شديد (أكثر من 60 دقيقة دون عذر)",
+        "note": "تم تسجيل الدخول الساعة 15:52:08 (بعد 10:00 AM) -> عقوبة: خصم نصف يوم من الراتب",
+        "all_logs": [
+          "check-in في 15:52:08",
+          "تسجيل دخول في 15:52:08"
+        ]
+      }
+    ]
+  }
+}

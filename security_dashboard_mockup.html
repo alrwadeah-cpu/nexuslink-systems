@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusLink Security & Admin Command Center - Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Glow background */
+        .glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
+            top: -100px;
+            right: -100px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .title-group h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .title-group p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .kpi-card.blue::before { background: var(--primary); }
+        .kpi-card.green::before { background: var(--success); }
+        .kpi-card.orange::before { background: var(--warning); }
+        .kpi-card.red::before { background: var(--danger); }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            color: var(--text-muted);
+        }
+
+        /* Layout Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: right;
+            padding: 12px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-orange { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-red { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* AI Insights Card */
+        .ai-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .ai-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .alert-item {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-badge">NX</div>
+            <div class="title-group">
+                <h1>NexusLink Security & Command Center</h1>
+                <p>شاشة التحكم بالأمن والتحليلات الذكية المباشرة</p>
+            </div>
+        </div>
+        <div class="status-pill">
+            <div class="dot"></div>
+            <span>المراقبة الحية نشطة (LIVE)</span>
+        </div>
+    </header>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card blue">
+            <div class="kpi-title">المتواجدون بالمبنى حالياً</div>
+            <div class="kpi-value">42 موظف</div>
+            <div class="kpi-sub">🟢 سجلوا دخول ولم يغادروا</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-title">المغادرون اليوم</div>
+            <div class="kpi-value">18 موظف</div>
+            <div class="kpi-sub">أنهوا دوامهم الرسمي</div>
+        </div>
+        <div class="kpi-card orange">
+            <div class="kpi-title">التأخيرات اليومية (بعد 9:15 ص)</div>
+            <div class="kpi-value">3 حالات</div>
+            <div class="kpi-sub">تجاوزوا مهلة 15 دقيقة</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-title">تنبيهات السياسة والخصم</div>
+            <div class="kpi-value">2 تنبيه</div>
+            <div class="kpi-sub">>60 دقيقة تأخير بدون عذر</div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+        <!-- Live Audit Table -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">📋 سجل حركات الدخول والتدقيق اللحظي</div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">تحديث تلقائي كل 10 ثوانٍ</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الحركة</th>
+                        <th>التاريخ والوقت</th>
+                        <th>الحالة / تقييم السياسة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>فايصل أحمد</td>
+                        <td>faisal@nexuslink.com</td>
+                        <td>تسجيل دخول</td>
+                        <td>2026-07-27 09:02:15</td>
+                        <td><span class="badge badge-green">مكتمل بالموعد</span></td>
+                    </tr>
+                    <tr>
+                        <td>علاء أحمد</td>
+                        <td>alaa@gmail.com</td>
+                        <td>تسجيل دخول</td>
+                        <td>2026-07-27 09:18:40</td>
+                        <td><span class="badge badge-orange">تأخير بسيط (3 دقائق)</span></td>
+                    </tr>
+                    <tr>
+                        <td>يوسف محمد</td>
+                        <td>yousef@gmail.com</td>
+                        <td>تسجيل دخول</td>
+                        <td>2026-07-27 10:25:10</td>
+                        <td><span class="badge badge-red">مخالفة >60د (خصم نصف يوم)</span></td>
+                    </tr>
+                    <tr>
+                        <td>سارة خالد</td>
+                        <td>sara@nexuslink.com</td>
+                        <td>غياب</td>
+                        <td>2026-07-27 --:--:--</td>
+                        <td><span class="badge badge-red">غياب بدون إذن</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- AI Analytics Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🤖 تحليلات الذكاء الاصطناعي (AI Policy Guard)</div>
+            </div>
+
+            <div class="ai-box">
+                <div class="ai-header">
+                    <span>✨ ملخص الانضباط اليومي</span>
+                </div>
+                <div class="ai-text">
+                    نسبة الالتزام بمواعيد الحضور اليوم بلغت <strong>92.5%</strong>. تم كشف حالة تأخير واحدة تتجاوز 60 دقيقة وتستوجب خصم نصف يوم بحسب المادة 2 من سياسة العمل.
+                </div>
+            </div>
+
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--text-muted);">⚠️ التنبيهات المستهدفة للأمن والموارد البشرية</h4>
+
+            <div class="alert-item">
+                <div>
+                    <strong>يوسف محمد</strong>
+                    <div style="color: var(--text-muted); font-size: 0.75rem;">تأخير 85 دقيقة دون عذر مقدّم</div>
+                </div>
+                <button class="action-btn">إرسال إنذار</button>
+            </div>
+
+            <div class="alert-item" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.2);">
+                <div>
+                    <strong>علاء أحمد</strong>
+                    <div style="color: var(--text-muted); font-size: 0.75rem;">تأخير للمرة الثانية هذا الأسبوع</div>
+                </div>
+                <button class="action-btn" style="background: var(--warning);">تنبيه شفوي</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

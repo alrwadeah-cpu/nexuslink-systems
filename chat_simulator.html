@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusLink Neural AI Assistant — Live Interactive Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --sim-bg: #090d1a;
+            --sim-card: rgba(15, 23, 42, 0.75);
+            --sim-accent: #a855f7;
+            --sim-cyan: #38bdf8;
+            --sim-border: rgba(168, 85, 247, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #070a14 70%);
+            color: #ffffff;
+            font-family: 'Tajawal', 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        /* Top Luxury Navbar */
+        .sim-top-bar {
+            padding: 1rem 2.5rem;
+            background: rgba(10, 15, 29, 0.85);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+            backdrop-filter: blur(24px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sim-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .sim-logo-orb {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 18px rgba(168, 85, 247, 0.6);
+        }
+
+        .sim-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .sim-btn {
+            padding: 8px 16px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 12px;
+            color: #e9d5ff;
+            font-weight: 700;
+            font-size: 0.84rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-btn:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: #c084fc;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .sim-btn.active {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.5);
+            border-color: transparent;
+        }
+
+        .sim-main {
+            flex: 1;
+            padding: 2rem 2.5rem;
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 2.2rem;
+            max-width: 1550px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 1100px) {
+            .sim-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sim-card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(168, 85, 247, 0.32);
+            border-radius: 24px;
+            padding: 1.8rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .sim-category-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin: 1.2rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 10px;
+        }
+
+        .preset-query-btn {
+            padding: 12px 16px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        html[dir="ltr"] .preset-query-btn {
+            text-align: left;
+        }
+
+        .preset-query-btn:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+            border-color: rgba(168, 85, 247, 0.7);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(168, 85, 247, 0.35);
+        }
+
+        /* Embedded Chat Container in Simulator */
+        .sim-chat-wrapper {
+            position: relative;
+            height: 680px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(168, 85, 247, 0.25);
+            border: 1px solid rgba(168, 85, 247, 0.45);
+        }
+
+        .sim-chat-wrapper .ai-chat-drawer-card {
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            border-radius: 0 !important;
+            border: none !important;
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sim-top-bar">
+        <div class="sim-title">
+            <div class="sim-logo-orb">✨</div>
+            <span>NexusLink Neural AI Assistant — Live Interactive Simulator</span>
+        </div>
+        <div class="sim-controls">
+            <div style="display: flex; gap: 6px; background: rgba(15, 23, 42, 0.85); padding: 4px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <button type="button" id="btn-sim-ar" class="sim-btn active" onclick="setSimLang('ar')">🇸🇦 العربية</button>
+                <button type="button" id="btn-sim-en" class="sim-btn" onclick="setSimLang('en')">🇺🇸 English</button>
+            </div>
+            <div style="display: flex; gap: 6px; background: rgba(15, 23, 42, 0.85); padding: 4px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <button type="button" id="btn-role-admin" class="sim-btn active" onclick="setSimRole('admin')">👑 Admin Role</button>
+                <button type="button" id="btn-role-user" class="sim-btn" onclick="setSimRole('user')">👤 Employee Role</button>
+            </div>
+            <a href="dashboard.html" class="sim-btn" style="text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); border-color: transparent; color: #fff;">🚀 Open Real Dashboard</a>
+        </div>
+    </header>
+
+    <main class="sim-main">
+        <!-- Left: Categorized Preset Queries & RAG Engine Matrix -->
+        <div class="sim-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; margin-bottom: 14px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                        <span>⚡</span> <span id="lbl-presets-title">اختبار الأسئلة والاستفسارات الذكية الفورية</span>
+                    </h3>
+                    <p style="color: #94a3b8; font-size: 0.84rem; margin: 4px 0 0 0;" id="lbl-presets-sub">
+                        اضغط على أي استفسار لتجربة الرد الفوري للذكاء الاصطناعي بدقة 100% ومطابقة لائحة الشركة:
+                    </p>
+                </div>
+                <span style="background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #e9d5ff; font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 10px;">RAG PRO 4.0</span>
+            </div>
+
+            <!-- Categories -->
+            <div class="sim-category-title"><span>📊</span> <span id="lbl-cat-ops">العمليات والملخصات المباشرة (Operational Intelligence)</span></div>
+            <div class="sim-preset-grid" id="presets-ops-grid"></div>
+
+            <div class="sim-category-title"><span>⚖️</span> <span id="lbl-cat-policy">سياسات الدوام والخصومات والأعذار (Rules & Penalties)</span></div>
+            <div class="sim-preset-grid" id="presets-policy-grid"></div>
+
+            <div class="sim-category-title"><span>👥</span> <span id="lbl-cat-roster">كادر الموظفين وتفاصيل الحسابات (Workforce & Profile QA)</span></div>
+            <div class="sim-preset-grid" id="presets-roster-grid"></div>
+
+            <!-- RAG Architecture Banner -->
+            <div style="margin-top: 1.8rem; padding: 16px 20px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.92rem; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                    <span>🛡️</span> <span id="lbl-rag-title">محرك RAG المقسم لـ 6 بنود معتمدة (policy.text)</span>
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.78rem; color: #cbd5e1; margin-top: 8px;">
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #38bdf8;"><strong>01_HOURS:</strong> 9:00 AM - 5:00 PM (40h/w)</div>
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #fbbf24;"><strong>02_LATENESS:</strong> 15m Grace, 60m Half-Day</div>
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #10b981;"><strong>03_LOGGING:</strong> Mandatory In/Out</div>
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #a855f7;"><strong>04_WINDOW:</strong> 2 Hours Submission</div>
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #ec4899;"><strong>05_PROOF:</strong> Mandatory Kroka/Doctor</div>
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 8px; border-radius: 8px; border-inline-start: 3px solid #6366f1;"><strong>06_REVIEW:</strong> Instant AI Decision</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Embedded Live Chat Interface (Cyber Glass Edition) -->
+        <div class="sim-chat-wrapper">
+            <div id="ai-chat-drawer" class="ai-chat-drawer-card">
+                <!-- Header -->
+                <div class="ai-chat-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="ai-bot-avatar">
+                            🤖
+                            <span class="online-indicator"></span>
+                        </div>
+                        <div class="ai-chat-title-wrap">
+                            <div class="ai-chat-title">
+                                <span>NexusLink AI Assistant</span>
+                                <span class="ai-model-badge">✨ GEMINI 1.5 PRO</span>
+                            </div>
+                            <div class="ai-chat-subtitle">
+                                <span id="sim-role-pill" class="ai-role-tag admin-badge">Executive Mode</span>
+                                <span>• ⚡ Real-Time RAG Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-chat-actions">
+                        <button type="button" onclick="clearAIChatHistory()" class="ai-chat-action-btn" title="Clear Chat History">🗑️</button>
+                    </div>
+                </div>
+
+                <!-- Quick Options Bar -->
+                <div id="admin-ai-quick-options" class="ai-quick-options-container">
+                    <!-- Populated dynamically via script.js -->
+                </div>
+
+                <!-- Messages Box -->
+                <div id="ai-chat-messages" class="ai-messages-container">
+                    <div class="ai-msg bot-msg welcome-bot-card" data-i18n="aiChatWelcome">
+                        👋 <strong>مرحباً بك في المساعد الذكي لنظام NexusLink</strong><br>
+                        <span style="font-size:0.83rem; color:#cbd5e1; display:inline-block; margin-top:4px;">محرك استعلامات عصبي متطور ومربوط بلائحة العمل المعتمدة (<code style="color:#c084fc;">policy.text</code>) وسجلات الدوام الفورية. اختر أحد المقترحات أدناه أو اسأل عن أي تفصيل:</span>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+                            <span class="welcome-pill-btn" onclick="selectAdminAiOption('summary')">📊 ملخص دوام اليوم</span>
+                            <span class="welcome-pill-btn" onclick="selectAdminAiOption('lateness')">⚠️ قواعد التأخير والخصم</span>
+                            <span class="welcome-pill-btn" onclick="selectAdminAiOption('excuses')">📑 متابعة وفحص الأعذار</span>
+                            <span class="welcome-pill-btn" onclick="selectAdminAiOption('proof')">📷 شروط الكروكة والإثباتات</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form onsubmit="sendAIChatMessage(event)" class="ai-chat-input-form">
+                    <input type="text" id="ai-chat-input" class="ai-chat-input-field" placeholder="اسأل عن سياسات الدوام أو الحضور..." data-i18n-placeholder="aiChatPlaceholder" required autocomplete="off">
+                    <button type="submit" id="ai-chat-send-btn" class="ai-chat-send-btn">
+                        <span data-i18n="btnSend">إرسال</span> 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal 3: Submit Lateness Excuse (Embedded in Simulator) -->
+    <div id="modal-submit-excuse" class="modal-overlay excuse-modal-overlay" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(16px); align-items: center; justify-content: center; padding: 20px;">
+        <div class="excuse-modal-card">
+            <!-- Header -->
+            <div class="excuse-modal-header">
+                <div class="excuse-header-left">
+                    <div class="excuse-icon-badge">📝</div>
+                    <div>
+                        <h3 class="excuse-modal-title" data-i18n="excuseModalTitle">Submit Lateness Excuse</h3>
+                        <p class="excuse-modal-subtitle" data-i18n="excuseModalSub">Direct submission to HR & Management with AI-assisted verification</p>
+                    </div>
+                </div>
+                <button type="button" class="excuse-modal-close" onclick="closeExcuseModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <!-- Dynamic Policy Notice Banner -->
+            <div id="excuse-policy-notice" class="excuse-policy-notice-card" data-i18n-html="excusePolicyNotice">
+                💡 <strong>شرط الإثبات (policy.text):</strong> أعذار حوادث السير تتطلب إرفاق <strong>صورة الكروكة أو الحادث</strong>، والأعذار الصحية تتطلب إرفاق <strong>التقرير الطبي الرسمي</strong> للقبول الفوري.
+            </div>
+
+            <form id="form-submit-excuse" onsubmit="submitExcuseForm(event)" class="excuse-form">
+                <!-- Detailed Reason Input -->
+                <div class="excuse-input-group">
+                    <label class="excuse-input-label" for="excuse-reason-text" data-i18n="excuseReasonLabel">Detailed Reason for Delay to Manager:</label>
+                    <textarea id="excuse-reason-text" class="excuse-textarea" required rows="3" placeholder="Type your excuse reason here (e.g., vehicle breakdown, health emergency...)" data-i18n-placeholder="excuseReasonPlaceholder"></textarea>
+                </div>
+
+                <!-- Proof Attachment Upload Box -->
+                <div class="excuse-input-group">
+                    <label class="excuse-input-label" data-i18n="excuseAttachmentLabel">📷 Attach Proof Document (Accident Kroka / Medical Report - Optional):</label>
+                    <div class="proof-upload-dropzone" id="proof-upload-dropzone" onclick="document.getElementById('excuse-attachment-file').click()">
+                        <input type="file" id="excuse-attachment-file" accept="image/*,.pdf" style="display: none;" onchange="handleExcuseFileSelect(event)">
+                        
+                        <div id="proof-upload-prompt" class="proof-upload-prompt-wrap">
+                            <div class="proof-upload-icon-pulse">📸</div>
+                            <div class="proof-upload-main-text" data-i18n="excuseDropzonePrompt">Click or drag & drop proof document here</div>
+                            <div class="proof-upload-sub-text" data-i18n="excuseDropzoneSub">(Supports JPG, PNG, GIF, WebP, PDF - Max 10MB)</div>
+                        </div>
+
+                        <div id="proof-upload-preview" class="proof-upload-preview-wrap" style="display: none;">
+                            <div class="proof-preview-info">
+                                <img id="proof-preview-img" src="" alt="Proof" class="proof-preview-thumb" style="display: none;">
+                                <div id="proof-preview-doc-icon" class="proof-preview-doc-icon" style="display: none;">📄</div>
+                                <div class="proof-file-details">
+                                    <div id="proof-file-name" class="proof-file-name">--</div>
+                                    <div id="proof-file-size" class="proof-file-size">--</div>
+                                </div>
+                            </div>
+                            <button type="button" class="proof-remove-pill" onclick="clearExcuseFile(event)" data-i18n="excuseDeleteProof">✕ Remove</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="excuse-modal-footer">
+                    <button type="button" class="excuse-btn-cancel" onclick="closeExcuseModal()" data-i18n="btnCancel">Cancel</button>
+                    <button type="submit" class="excuse-btn-submit" id="btn-submit-excuse-action" data-i18n="btnSubmitExcuseSubmit">Submit Excuse to Manager 🚀</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Proof Lightbox Modal Overlay for Simulator -->
+    <div id="proof-lightbox-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:20000; background:rgba(0,0,0,0.85); backdrop-filter:blur(16px); align-items:center; justify-content:center;">
+        <div class="proof-lightbox-card">
+            <div class="proof-lightbox-header">
+                <h4 id="proof-lightbox-title">🖼️ معاينة وثيقة الإثبات (الكروكة / التقرير الطبي)</h4>
+                <button type="button" class="proof-lightbox-close" onclick="closeProofLightbox()">✕</button>
+            </div>
+            <div class="proof-lightbox-body">
+                <img id="proof-lightbox-img" src="" alt="Proof Preview" class="proof-lightbox-image">
+            </div>
+            <div class="proof-lightbox-footer">
+                <a id="proof-lightbox-download" href="" target="_blank" download class="proof-download-btn">⬇️ تحميل الوثيقة</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let simRole = 'admin';
+
+        const presetsOpsAr = [
+            { icon: "📊", label: "الملخص الذكي لدوام اليوم", query: "الملخص الذكي لدوام اليوم" },
+            { icon: "📑", label: "فحص ومتابعة ملف الأعذار والإثباتات", query: "متابعة وفحص طلبات الأعذار والإثباتات" },
+            { icon: "🕒", label: "هل سجلت الدخول وهل أنا متأخر اليوم؟", query: "هل سجلت الدخول اليوم وهل أنا متأخر؟" }
+        ];
+
+        const presetsPolicyAr = [
+            { icon: "📅", label: "ساعات وأيام العمل الرسمية", query: "أيام وأوقات وساعات العمل الرسمية" },
+            { icon: "⚠️", label: "قواعد التأخير والخصومات وفترة السماح", query: "قواعد التأخير وفترة السماح والخصومات" },
+            { icon: "📝", label: "قوانين تسجيل الحضور والانصراف", query: "آلية وقواعد تسجيل الحضور والانصراف" },
+            { icon: "⏳", label: "مهلة تقديم عذر التأخير (ساعتان)", query: "مهلة ووقت تقديم الأعذار" },
+            { icon: "📷", label: "شروط إرفاق الكروكة والتقارير الطبية", query: "شروط إرفاق الإثباتات والتقارير الطبية والكروكة" }
+        ];
+
+        const presetsRosterAr = [
+            { icon: "👥", label: "قائمة كادر الموظفين والملفات", query: "قائمة الموظفين في قاعدة البيانات" },
+            { icon: "👤", label: "تقرير انضباط الموظف علاء", query: "تفاصيل الموظف: alaa@nexuslink.com" }
+        ];
+
+        const presetsOpsEn = [
+            { icon: "📊", label: "Today's Smart Attendance Summary", query: "Today's smart attendance summary" },
+            { icon: "📑", label: "Excuse & Proof Audit Report", query: "Excuses and proof audit report" },
+            { icon: "🕒", label: "Am I late today?", query: "Did I check in today and am I late?" }
+        ];
+
+        const presetsPolicyEn = [
+            { icon: "📅", label: "Official Working Days & Hours", query: "Official working days and hours" },
+            { icon: "⚠️", label: "Lateness & Deduction Rules", query: "Lateness rules, grace period, and deductions" },
+            { icon: "📝", label: "Check-In & Check-Out Rules", query: "Attendance check-in and check-out rules" },
+            { icon: "⏳", label: "Excuse Submission Deadline", query: "Excuse submission deadline and window" },
+            { icon: "📷", label: "Proof & Medical Report Policy", query: "Proof and documentation requirements for excuses" }
+        ];
+
+        const presetsRosterEn = [
+            { icon: "👥", label: "Complete Workforce Roster", query: "Registered employee roster" },
+            { icon: "👤", label: "Employee Dossier (Alaa)", query: "Employee Details: alaa@nexuslink.com" }
+        ];
+
+        function renderPresets() {
+            const isAr = currentLang === 'ar';
+            const opsList = isAr ? presetsOpsAr : presetsOpsEn;
+            const policyList = isAr ? presetsPolicyAr : presetsPolicyEn;
+            const rosterList = isAr ? presetsRosterAr : presetsRosterEn;
+
+            const mapButtons = (list) => list.map(p => `
+                <button type="button" class="preset-query-btn" onclick="runPresetQuery('${p.query.replace(/'/g, "\\'")}')">
+                    <span>${p.icon}</span> <span>${p.label}</span>
+                </button>
+            `).join('');
+
+            const gridOps = document.getElementById('presets-ops-grid');
+            const gridPolicy = document.getElementById('presets-policy-grid');
+            const gridRoster = document.getElementById('presets-roster-grid');
+
+            if (gridOps) gridOps.innerHTML = mapButtons(opsList);
+            if (gridPolicy) gridPolicy.innerHTML = mapButtons(policyList);
+            if (gridRoster) gridRoster.innerHTML = mapButtons(rosterList);
+
+            document.getElementById('lbl-presets-title').textContent = isAr 
+                ? 'اختبار الأسئلة والاستفسارات الذكية الفورية' 
+                : 'Instant Neural Query Presets & Scenarios';
+
+            document.getElementById('lbl-presets-sub').textContent = isAr 
+                ? 'اضغط على أي استفسار لتجربة الرد الفوري للذكاء الاصطناعي بدقة 100% ومطابقة لائحة الشركة:' 
+                : 'Click any query preset to test instant 100% natural AI response grounded in policy:';
+
+            document.getElementById('lbl-cat-ops').textContent = isAr
+                ? 'العمليات والملخصات المباشرة (Operational Intelligence)'
+                : 'Operational Intelligence & Daily Metrics';
+
+            document.getElementById('lbl-cat-policy').textContent = isAr
+                ? 'سياسات الدوام والخصومات والأعذار (Rules & Penalties)'
+                : 'Company Policy Rules & Penalties';
+
+            document.getElementById('lbl-cat-roster').textContent = isAr
+                ? 'كادر الموظفين وتفاصيل الحسابات (Workforce & Profile QA)'
+                : 'Workforce Roster & Profile Dossiers';
+        }
+
+        function runPresetQuery(text) {
+            const inputEl = document.getElementById('ai-chat-input');
+            if (inputEl) {
+                inputEl.value = text;
+                const event = { preventDefault: () => {} };
+                sendAIChatMessage(event);
+            }
+        }
+
+        function setSimLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+            document.getElementById('btn-sim-ar').classList.toggle('active', lang === 'ar');
+            document.getElementById('btn-sim-en').classList.toggle('active', lang === 'en');
+
+            updatePageTexts();
+            updateAiQuickOptionsUI();
+            clearAIChatHistory();
+            renderPresets();
+        }
+
+        function setSimRole(role) {
+            simRole = role;
+            document.getElementById('btn-role-admin').classList.toggle('active', role === 'admin');
+            document.getElementById('btn-role-user').classList.toggle('active', role === 'user');
+
+            const pill = document.getElementById('sim-role-pill');
+            if (role === 'admin') {
+                localStorage.setItem('userEmail', 'admin@nexus.com');
+                if (pill) {
+                    pill.textContent = currentLang === 'ar' ? 'وضع المدير التنفيذي' : 'Executive Mode';
+                    pill.className = 'ai-role-tag admin-badge';
+                }
+            } else {
+                localStorage.setItem('userEmail', 'alaa@nexuslink.com');
+                if (pill) {
+                    pill.textContent = currentLang === 'ar' ? 'وضع الموظف' : 'Employee Mode';
+                    pill.className = 'ai-role-tag employee-badge';
+                }
+            }
+            updateAiQuickOptionsUI();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('userEmail')) {
+                localStorage.setItem('userEmail', 'admin@nexus.com');
+            }
+            setSimLang(localStorage.getItem('lang') || 'ar');
+            setSimRole('admin');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusLink Operational Console</title>
+
+    <!-- Path updated to use the unified stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+    <!-- Background Animated Glows -->
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <!-- Executive Top Header Bar -->
+    <header class="top-executive-bar">
+        <div class="header-brand">
+            <div class="logo"><span></span> NexusLink Systems</div>
+            <div class="sub-logo" data-i18n="logoConsole">OPERATIONAL CONSOLE</div>
+        </div>
+
+        <div class="header-clock-box">
+            <div class="clock-time" id="time">--:--:--</div>
+            <div class="clock-date" id="date">--</div>
+        </div>
+
+        <div class="header-profile-actions">
+            <div class="lang-switcher" id="language-switcher" onclick="toggleLanguage()">
+                <div class="lang-slider" id="lang-slider"></div>
+                <button class="lang-btn active" id="btn-en" data-lang="en">EN</button>
+                <button class="lang-btn" id="btn-ar" data-lang="ar">العربية</button>
+            </div>
+            
+            <!-- Admin Notification Bell for Lateness Excuses -->
+            <div id="admin-notification-bell-wrapper" style="position: relative; cursor: pointer; display: none;" onclick="toggleAdminExcuseNotificationDrawer(event)">
+                <div class="notification-bell-btn">
+                    🔔
+                    <span id="admin-excuse-badge" class="notification-badge" style="display: none;">0</span>
+                </div>
+
+                <!-- Floating Excuse Popover Drawer (Cyber Glass Style) -->
+                <div id="admin-excuse-popover" class="admin-excuse-popover-glass" onclick="event.stopPropagation()" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
+                        <div style="font-weight: 800; color: #fde68a; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.1rem;">🔔</span>
+                            <span data-i18n="excuseNotificationsTitle">Pending Lateness Requests</span>
+                        </div>
+                        <button type="button" onclick="loadAdminExcuses()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #cbd5e1; font-size: 0.75rem; padding: 4px 10px; cursor: pointer; transition: all 0.2s;" data-i18n="btnRefresh">Refresh</button>
+                    </div>
+                    <div id="admin-excuse-popover-list" style="max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Populated dynamically via script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Notification Bell for Excuses Status -->
+            <div id="user-notification-bell-wrapper" style="position: relative; cursor: pointer; display: none;" onclick="toggleUserExcuseNotificationDrawer(event)">
+                <div class="notification-bell-btn" title="My Excuses Status">
+                    🔔
+                    <span id="user-excuse-badge" class="notification-badge" style="display: none;">0</span>
+                </div>
+
+                <!-- Floating Employee Excuse Popover Drawer (Cyber Glass Style) -->
+                <div id="user-excuse-popover" class="admin-excuse-popover-glass" onclick="event.stopPropagation()" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
+                        <div style="font-weight: 800; color: #38bdf8; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.1rem;">📨</span>
+                            <span data-i18n="userExcuseNotificationsTitle">Delay Excuses Status</span>
+                        </div>
+                        <button type="button" onclick="loadMyExcuses()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #cbd5e1; font-size: 0.75rem; padding: 4px 10px; cursor: pointer; transition: all 0.2s;" data-i18n="btnRefresh">Refresh</button>
+                    </div>
+                    <div id="user-excuse-popover-list" style="max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Populated dynamically via script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="identity-pill">
+                <div class="avatar-icon">NL</div>
+                <div class="identity-details">
+                    <div id="user-name-display">Loading...</div>
+                    <div id="user-email-display"></div>
+                </div>
+            </div>
+            
+            <button class="btn-terminate-nav" onclick="logout()" title="Logout" data-i18n="btnTerminate">Terminate</button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="nav-rail-title" data-i18n="navTitle">EXECUTIVE COMMAND</div>
+            
+            <nav class="nav-rail-menu">
+                <a href="#" onclick="showOverviewSection()" class="nav-rail-item active" id="nav-overview-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label" data-i18n="navOverview">Overview</span>
+                </a>
+                <a href="#admin-logs-body" onclick="showOverviewSection()" class="nav-rail-item" style="display: none;">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label" data-i18n="navLiveAudit">Live Audit</span>
+                </a>
+                <div class="nav-rail-dropdown-wrapper" style="display: none;">
+                    <a href="javascript:void(0)" onclick="toggleOpsDropdown(event)" class="nav-rail-item" id="nav-ops-item">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-label" data-i18n="navUserOps">User & Log Ops ▾</span>
+                    </a>
+                    <div id="ops-dropdown-menu" class="ops-dropdown-menu" style="display: none;">
+                        <button class="ops-dropdown-btn" onclick="openExecutiveModal('modal-add-user')">
+                            <span class="ops-icon">➕</span>
+                            <span class="ops-text" data-i18n="adminAddUserTitle">1- Add New Employee Account</span>
+                        </button>
+                        <button class="ops-dropdown-btn" onclick="openExecutiveModal('modal-manual-log')">
+                            <span class="ops-icon">📝</span>
+                            <span class="ops-text" data-i18n="adminManualTitle">2- Manually Log Attendance Record</span>
+                        </button>
+                    </div>
+                </div>
+                <a href="javascript:void(0)" onclick="showAiReportSection()" class="nav-rail-item" id="nav-ai-report-item" style="display: none;">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label" data-i18n="navAiReport">AI Report & Summary</span>
+                </a>
+                <a href="javascript:void(0)" onclick="toggleAIChatDrawer()" class="nav-rail-item" id="nav-ai-assist-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label" data-i18n="navAiAssist">AI HR Assist</span>
+                </a>
+            </nav>
+
+            <div class="nav-rail-footer">
+                <div class="rail-badge online" data-i18n="badgeRealtime">⚡ REALTIME WAL DB</div>
+                <div class="rail-badge policy" data-i18n="badgePolicy">🛡️ POLICY GUARD</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="welcome-heading" id="dashboard-greeting" data-i18n="workspaceActivated">Workspace Activated</h1>
+            
+            <!-- User Attendance Gateway (Restored to Main Content) -->
+            <div id="user-gateway-card" class="section dashboard-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+                    <div class="section-title" style="margin-bottom: 0;" data-i18n="clockTitle">Time & Attendance Gateways</div>
+                    <button type="button" class="btn-excuse" onclick="openExcuseModal()" style="padding: 9px 16px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; color: #e9d5ff; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                        <span>📝</span> <span data-i18n="btnSubmitExcuse">تقديم عذر تأخير (Submit Excuse)</span>
+                    </button>
+                </div>
+                <div class="gateway-btns">
+                    <button class="btn-checkin" onclick="recordAttendance('check-in')" data-i18n="btnCheckin">Check In</button>
+                    <button class="btn-checkout" onclick="recordAttendance('check-out')" data-i18n="btnCheckout">Check Out</button>
+                </div>
+            </div>
+
+            <!-- User Historical Operational Logs (Executive Cyber Glass Card) -->
+            <div id="user-logs-card" class="dashboard-card" style="margin-top: 1.5rem; margin-bottom: 1.8rem; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 22px; padding: 1.6rem; backdrop-filter: blur(20px); box-shadow: 0 12px 40px rgba(0,0,0,0.5);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.3rem; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #ffffff, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            <span>📜</span> <span data-i18n="logsTitle">Historical Operational Logs</span>
+                        </h3>
+                        <div style="font-size: 0.78rem; color: #38bdf8; margin-top: 4px;" data-i18n="userLogsSub">تفاصيل سجلات الحضور والانصراف اليومية والتاريخية الخاصة بك</div>
+                    </div>
+                    <!-- Dedicated User Date Dropdown Popover Button -->
+                    <div style="position: relative;">
+                        <button type="button" id="btn-user-date-popover" onclick="toggleDatePopover('user-date-popover')" style="padding: 8px 16px; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 12px; color: #38bdf8; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15);">
+                            <span>📅</span> <span data-i18n="btnSelectDate">تاريخ الدوام</span> <span>▼</span>
+                        </button>
+                        <div id="user-date-popover" class="date-popover-card" style="display: none;">
+                            <div style="font-size: 0.78rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px;" data-i18n="lblDateFilter">اختر تاريخ الدوام:</div>
+                            <input type="date" id="user-drawer-date-filter" oninput="onUserDateChange(false)" onchange="onUserDateChange(false)" style="width: 100%; padding: 8px 12px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 0.85rem; outline: none; box-sizing: border-box; margin-bottom: 10px;">
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" onclick="setQuickDate('user-drawer-date-filter', 'today');" style="flex:1; padding: 6px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 8px; color: #93c5fd; font-size: 0.75rem; font-weight: 700; cursor: pointer;" data-i18n="btnToday">اليوم</button>
+                                <button type="button" onclick="setQuickDate('user-drawer-date-filter', 'yesterday');" style="flex:1; padding: 6px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 8px; color: #93c5fd; font-size: 0.75rem; font-weight: 700; cursor: pointer;" data-i18n="btnYesterday">الأمس</button>
+                                <button type="button" onclick="setQuickDate('user-drawer-date-filter', 'all');" style="flex:1; padding: 6px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; color: #fca5a5; font-size: 0.75rem; font-weight: 700; cursor: pointer;" data-i18n="btnShowAll">عرض الكل</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-table-container" style="border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.4); overflow-x: auto; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.84rem;">
+                        <thead>
+                            <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.78rem; text-transform: uppercase;">
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thDate">DATE</th>
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thIn">CHECK-IN</th>
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thOut">CHECK-OUT</th>
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thStatus">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <!-- Populated dynamically via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- User Logs Pagination Controls -->
+                <div id="user-logs-pagination-container" style="margin-top: 1.2rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(15, 23, 42, 0.65); padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(0, 242, 254, 0.3); backdrop-filter: blur(14px);">
+                    <!-- Pagination controls rendered dynamically by script.js -->
+                </div>
+            </div>
+            
+            <!-- Admin Console (Executive Master Director Command Center) -->
+            <div id="admin-section" class="section dashboard-card" style="display: none; margin-top: 0;">
+                <!-- Executive Header Banner -->
+                <div class="admin-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); padding: 1.4rem 2rem; border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.35); backdrop-filter: blur(20px); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                            <span style="font-size: 1.6rem;">👑</span>
+                            <h2 style="margin: 0; font-size: 1.35rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px;" data-i18n="adminHeaderTitle">EXECUTIVE MASTER COMMAND CENTER</h2>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; font-size: 0.75rem; flex-wrap: wrap;">
+                            <span style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; padding: 3px 10px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);" data-i18n="badgeRealtime">⚡ REALTIME WAL DB</span>
+                            <span style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; padding: 3px 10px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(59, 130, 246, 0.4);" data-i18n="badgePolicy">🛡️ POLICY GUARD ACTIVE</span>
+                            <span style="background: rgba(168, 85, 247, 0.2); color: #e9d5ff; padding: 3px 10px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(168, 85, 247, 0.4);" data-i18n="badgeNotif">🔔 NOTIFICATION BELL ENABLED</span>
+                        </div>
+                    </div>
+                    <button class="btn-export-excel" onclick="exportAdminLogsToCSV()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35)); border: 1px solid rgba(16, 185, 129, 0.6); color: #6ee7b7; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.9rem; transition: all 0.2s; outline: none; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);" data-i18n="btnExport">Export Master CSV</button>
+                </div>
+                
+                <!-- 1. Top 4 Key Executive KPI Stats Grid -->
+                <div class="admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem;">
+                    <div class="stat-card stat-checkin" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.12); transition: transform 0.2s;">
+                        <div class="stat-title" style="color: #6ee7b7; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;" data-i18n="statCheckin">Check In Today</div>
+                        <div class="stat-value" id="stat-checkin" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                    <div class="stat-card stat-checkout" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12); transition: transform 0.2s;">
+                        <div class="stat-title" style="color: #93c5fd; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;" data-i18n="statCheckout">Check Out Today</div>
+                        <div class="stat-value" id="stat-checkout" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                    <div class="stat-card stat-late15" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 30px rgba(245, 158, 11, 0.12); transition: transform 0.2s;">
+                        <div class="stat-title" style="color: #fcd34d; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;" data-i18n="statLate15">Late > 15 Mins</div>
+                        <div class="stat-value" id="stat-late15" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                    <div class="stat-card stat-absent" style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 30px rgba(239, 68, 68, 0.12); transition: transform 0.2s;">
+                        <div class="stat-title" style="color: #fca5a5; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;" data-i18n="statAbsent">Absent Today</div>
+                        <div class="stat-value" id="stat-absent" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                </div>
+
+                <!-- Dedicated Admin Smart Summary & Lateness Audit Section -->
+                <div id="admin-lateness-summary-card" class="dashboard-card" style="margin-bottom: 1.8rem; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 22px; padding: 1.6rem; backdrop-filter: blur(20px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); max-width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #ffffff, #e9d5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <span>⏱️</span> <span data-i18n="latenessTitle">جدول متابعة تأخير الموظفين بعد 09:00 ص (Lateness Audit Table)</span>
+                            </h3>
+                            <div style="font-size: 0.78rem; color: #c084fc; margin-top: 4px;" data-i18n="latenessSub">حساب دقيق بالدقائق لوقت التأخير بعد 09:00 ص وتطبيق الخصومات حسب policy.text</div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" onclick="toggleAdminExcuseNotificationDrawer(event)" style="padding: 8px 16px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(126, 34, 206, 0.35)); border: 1px solid rgba(168, 85, 247, 0.6); border-radius: 12px; color: #e9d5ff; font-weight: 800; font-size: 0.84rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);">
+                                <span>📝</span>
+                                <span data-i18n="excuseNotificationsTitle">طلبات أعذار التأخير المعلقة</span>
+                                <span id="lateness-card-excuse-badge" style="display: none; background: #ef4444; color: #fff; font-size: 0.72rem; font-weight: 900; padding: 2px 7px; border-radius: 10px; border: 1px solid #fca5a5; box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);">0</span>
+                            </button>
+
+                            <!-- Dedicated Date Popover Button -->
+                            <div style="position: relative; display: inline-block;">
+                                <button type="button" id="btn-lateness-date-popover" onclick="toggleDatePopover('lateness-date-popover')" style="padding: 8px 16px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(0, 242, 254, 0.45); border-radius: 12px; color: #38bdf8; font-weight: 800; font-size: 0.84rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);">
+                                    <span>📅</span>
+                                    <span data-i18n="btnSelectDate">تاريخ الدوام</span>
+                                    <span style="font-size: 0.72rem;">▼</span>
+                                </button>
+                                <div id="lateness-date-popover" class="date-popover-card" style="display: none;">
+                                    <label style="display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px;" data-i18n="lblDateFilter">تاريخ التصفية (اليوم/الشهر/السنة):</label>
+                                    <input type="date" id="lateness-date-filter" oninput="onLatenessDateChange()" onchange="onLatenessDateChange()" style="width: 100%; padding: 8px 12px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 10px; color: #fff; font-size: 0.84rem; outline: none; box-sizing: border-box; cursor: pointer; margin-bottom: 10px;">
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <button type="button" onclick="setQuickDate('lateness-date-filter', 'today')" style="flex: 1; padding: 6px 8px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 8px; color: #93c5fd; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnToday">اليوم</button>
+                                        <button type="button" onclick="setQuickDate('lateness-date-filter', 'yesterday')" style="flex: 1; padding: 6px 8px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; color: #e9d5ff; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnYesterday">الأمس</button>
+                                        <button type="button" onclick="setQuickDate('lateness-date-filter', 'all')" style="flex: 1; padding: 6px 8px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 8px; color: #6ee7b7; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnShowAll">عرض الكل</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Lateness Filters Drawer -->
+                    <div id="lateness-filters-drawer" style="display: none; margin-top: 1.2rem; margin-bottom: 1.2rem; padding: 14px 18px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 14px; backdrop-filter: blur(12px); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);">
+                        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;" data-i18n="lblSearch">البحث بالإيميل أو الاسم:</label>
+                                <input type="text" id="lateness-search" placeholder="بحث باسم الموظف أو بريده..." data-i18n-placeholder="searchPlaceholder" oninput="renderAdminLatenessTable()" onkeydown="if(event.key==='Enter'){event.preventDefault(); renderAdminLatenessTable();}" onfocus="preventScrollOnFocus(event)" style="width: 100%; padding: 8px 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; color: #c084fc; margin-bottom: 4px;" data-i18n="lblDateFilter">تاريخ التصفية (اليوم/الشهر/السنة):</label>
+                                <input type="date" id="lateness-drawer-date-filter" oninput="onLatenessDateChange()" onchange="onLatenessDateChange()" onkeydown="if(event.key==='Enter'){event.preventDefault(); renderAdminLatenessTable();}" onfocus="preventScrollOnFocus(event)" style="padding: 8px 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;" data-i18n="lblLatenessFilter">درجة التأخير:</label>
+                                <select id="lateness-filter" onchange="renderAdminLatenessTable()" style="padding: 8px 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; cursor: pointer;">
+                                    <option value="all" data-i18n="optAllLate">كل الحضور المتأخر</option>
+                                    <option value="grace" data-i18n="optGrace">ضمن فترة السماح (15 دقيقة)</option>
+                                    <option value="late" data-i18n="optLate">تأخير عادي (15 - 60 دقيقة)</option>
+                                    <option value="deduction" data-i18n="optDeduction">تأخير شديد (خصم نصف يوم >60د)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lateness Table Container -->
+                    <div style="margin-top: 1.2rem; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.4); overflow-x: auto; overflow-y: hidden !important;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.84rem;">
+                            <thead>
+                                <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.78rem; text-transform: uppercase;">
+                                    <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThName">اسم الموظف</th>
+                                    <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThEmail">البريد الإلكتروني</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="adminThInTime">وقت الدخول</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="adminThLateness">التأخير بعد 09:00 ص</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="adminThStatus">الحالة والخصم (Policy Guard)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-lateness-body">
+                                <!-- Populated dynamically via script.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Lateness Pagination Controls -->
+                    <div id="lateness-pagination-container" style="margin-top: 1.2rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(15, 23, 42, 0.65); padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(168, 85, 247, 0.3); backdrop-filter: blur(14px);">
+                        <!-- Pagination controls rendered dynamically by script.js -->
+                    </div>
+                </div>
+
+                <!-- 2. Master Live Audit Terminal (Full-Width Card Aligned with Lateness Table Above) -->
+                <div id="master-live-audit-card" class="dashboard-card" style="margin-bottom: 1.8rem; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 22px; padding: 1.6rem; backdrop-filter: blur(20px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); max-width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #ffffff, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <span>📋</span> <span data-i18n="masterAuditTitle">جدول السجل الشامل للحضور والانصراف (Master Live Audit Terminal)</span>
+                            </h3>
+                            <div style="font-size: 0.78rem; color: #38bdf8; margin-top: 4px;" data-i18n="masterAuditSub">متابعة تفصيلية شاملة لوقت تسجيل الدخول والخروج والغياب لجميع الموظفين</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <!-- Dedicated Date Popover Button -->
+                            <div style="position: relative; display: inline-block;">
+                                <button type="button" id="btn-master-date-popover" onclick="toggleDatePopover('master-date-popover')" style="padding: 8px 16px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(0, 242, 254, 0.45); border-radius: 12px; color: #38bdf8; font-weight: 800; font-size: 0.84rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2);">
+                                    <span>📅</span>
+                                    <span data-i18n="btnSelectDate">تاريخ الدوام</span>
+                                    <span style="font-size: 0.72rem;">▼</span>
+                                </button>
+                                <div id="master-date-popover" class="date-popover-card" style="display: none;">
+                                    <label style="display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px;" data-i18n="lblDateFilter">تاريخ التصفية (اليوم/الشهر/السنة):</label>
+                                    <input type="date" id="admin-date-filter" oninput="onMasterDateChange()" onchange="onMasterDateChange()" style="width: 100%; padding: 8px 12px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 10px; color: #fff; font-size: 0.84rem; outline: none; box-sizing: border-box; cursor: pointer; margin-bottom: 10px;">
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <button type="button" onclick="setQuickDate('admin-date-filter', 'today')" style="flex: 1; padding: 6px 8px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 8px; color: #93c5fd; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnToday">اليوم</button>
+                                        <button type="button" onclick="setQuickDate('admin-date-filter', 'yesterday')" style="flex: 1; padding: 6px 8px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; color: #e9d5ff; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnYesterday">الأمس</button>
+                                        <button type="button" onclick="setQuickDate('admin-date-filter', 'all')" style="flex: 1; padding: 6px 8px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 8px; color: #6ee7b7; font-size: 0.74rem; font-weight: 700; cursor: pointer;" data-i18n="btnShowAll">عرض الكل</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Filters Drawer Container -->
+                    <div id="master-filters-drawer" style="display: none; margin-top: 1.2rem; margin-bottom: 1.2rem; padding: 14px 18px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 14px; backdrop-filter: blur(12px); box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);">
+                        <div class="admin-filter-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;" data-i18n="lblSearch">البحث بالإيميل أو الاسم:</label>
+                                <input type="text" id="admin-search" placeholder="بحث باسم الموظف أو بريده..." data-i18n-placeholder="searchPlaceholder" oninput="filterAdminLogs()" onkeydown="if(event.key==='Enter'){event.preventDefault(); filterAdminLogs();}" onfocus="preventScrollOnFocus(event)" style="width: 100%; padding: 8px 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;" data-i18n="lblDateFilter">تصفية حسب التاريخ (اليوم/الشهر/السنة):</label>
+                                <input type="date" id="admin-drawer-date-filter" oninput="onMasterDateChange()" onchange="onMasterDateChange()" onkeydown="if(event.key==='Enter'){event.preventDefault(); filterAdminLogs();}" onfocus="preventScrollOnFocus(event)" style="padding: 8px 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.72rem; color: #94a3b8; margin-bottom: 4px;" data-i18n="lblStatusFilter">نوع الحركة:</label>
+                                <select id="admin-status-filter" onchange="filterAdminLogs()" style="padding: 8px 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; color: #fff; font-size: 0.82rem; outline: none; cursor: pointer;">
+                                    <option value="all" data-i18n="filterAll">كل الحركات</option>
+                                    <option value="check-in" data-i18n="optCheckin">تسجيل دخول</option>
+                                    <option value="check-out" data-i18n="optCheckout">تسجيل خروج</option>
+                                    <option value="absent" data-i18n="badgeAbsent">غياب</option>
+                                </select>
+                            </div>
+                            <div style="align-self: flex-end;">
+                                <button class="btn-clear-filters" onclick="clearAdminFilters()" style="padding: 8px 16px; background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; color: #fca5a5; font-size: 0.82rem; cursor: pointer; font-weight: 700; transition: all 0.2s;" data-i18n="btnClear">تفريغ الفلاتر</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Master Table Container -->
+                    <div style="margin-top: 1.2rem; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.4); overflow-x: auto; overflow-y: hidden !important;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.84rem;">
+                            <thead>
+                                <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.78rem; text-transform: uppercase;">
+                                    <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThName">اسم الموظف</th>
+                                    <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThEmail">البريد الإلكتروني</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="thDate">التاريخ</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="thIn">وقت تسجيل الدخول (Check-In)</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="thOut">وقت تسجيل الخروج (Check-Out)</th>
+                                    <th style="padding: 12px 14px; text-align: center;" data-i18n="adminThActivity">الحالة والنشاط</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-logs-body">
+                                <!-- Populated dynamically via script.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Master Pagination Controls -->
+                    <div id="master-pagination-container" style="margin-top: 1.2rem; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(15, 23, 42, 0.65); padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(0, 242, 254, 0.3); backdrop-filter: blur(14px);">
+                        <!-- Pagination controls rendered dynamically by script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive AI Intelligence Summary & Report Section -->
+            <div id="ai-report-section" class="section dashboard-card" style="display: none; margin-top: 0; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 22px; padding: 1.8rem; backdrop-filter: blur(20px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); max-width: 100%; box-sizing: border-box;">
+                <!-- Header Banner -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.2)); padding: 1.4rem 2rem; border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.4); backdrop-filter: blur(20px);">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                            <span style="font-size: 1.8rem;">🤖</span>
+                            <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #c084fc, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" data-i18n="aiReportHeaderTitle">EXECUTIVE AI COMPLIANCE REPORT</h2>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; font-size: 0.78rem; flex-wrap: wrap; margin-top: 4px;">
+                            <span style="background: rgba(168, 85, 247, 0.2); color: #e9d5ff; padding: 3px 12px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(168, 85, 247, 0.4);" data-i18n="badgeGeminiAI">⚡ Powered by Gemini AI Engine</span>
+                            <span style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; padding: 3px 12px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4);" data-i18n="badgeRealtimeAnalytics">📊 Real-Time Analytics</span>
+                        </div>
+                    </div>
+                        <span>🚀</span> <span data-i18n="btnGenerateAiReport">توليد التقرير التنفيذي المباشر</span>
+                    </button>
+                </div>
+
+                <!-- Individual AI Dossier & Date Interactive Filter Bar -->
+                <div style="margin-bottom: 1.5rem; padding: 14px 18px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 16px; backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; flex: 1;">
+                        <div id="ai-employee-filter-wrapper" style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.85rem; color: #c084fc; font-weight: 700;">👤</span>
+                            <label style="font-size: 0.8rem; color: #e9d5ff; font-weight: 700;" data-i18n="lblAiTargetEmployee">التقرير المخصص للموظف:</label>
+                            <select id="ai-report-employee-filter" onchange="loadAiReportData()" style="padding: 8px 14px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; color: #fff; font-size: 0.84rem; font-weight: 700; outline: none; cursor: pointer; min-width: 210px;">
+                                <option value="all" data-i18n="optAllEmployees">👥 جميع الموظفين (All Employees)</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.85rem; color: #38bdf8; font-weight: 700;">📅</span>
+                            <label style="font-size: 0.8rem; color: #93c5fd; font-weight: 700;" data-i18n="lblAiReportDate">تاريخ التقرير:</label>
+                            <input type="date" id="ai-report-date-filter" onchange="loadAiReportData()" oninput="loadAiReportData()" style="padding: 8px 14px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 10px; color: #fff; font-size: 0.84rem; outline: none; cursor: pointer;">
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" onclick="loadAiReportData()" style="padding: 8px 16px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(59, 130, 246, 0.3)); border: 1px solid rgba(168, 85, 247, 0.5); border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);">
+                            🔄 <span data-i18n="btnRefreshReport">تحديث التقرير التنفيذي</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dedicated Individual Employee AI Dossier Banner -->
+                <div id="ai-individual-dossier-card" style="display: none; margin-bottom: 1.8rem; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85)); border: 1px solid rgba(168, 85, 247, 0.45); border-radius: 20px; padding: 1.6rem; backdrop-filter: blur(20px); box-shadow: 0 12px 35px rgba(168, 85, 247, 0.18);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 50px; height: 50px; border-radius: 16px; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #fff; font-weight: 800; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);" id="ai-dossier-avatar">👤</div>
+                            <div>
+                                <h3 id="ai-dossier-name" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px;">-</h3>
+                                <div id="ai-dossier-email" style="font-size: 0.82rem; color: #a855f7; margin-top: 4px; font-weight: 600;">-</div>
+                            </div>
+                        </div>
+                        <div id="ai-dossier-badge-container">
+                            <span id="ai-dossier-rating-badge" style="padding: 6px 14px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; background: rgba(255,255,255,0.08); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4);">
+                                🟢 Compliant
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Individual Employee Metrics Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 1.2rem;">
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 0.72rem; color: #93c5fd; font-weight: 700;" data-i18n="lblDossierHistory">إجمالي السجلات المسجلة</div>
+                            <div id="ai-dossier-total-logs" style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 4px;">0</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 0.72rem; color: #fcd34d; font-weight: 700;" data-i18n="lblDossierLate15">حالات التأخير > 15 دقيقة</div>
+                            <div id="ai-dossier-late15" style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 4px;">0</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 0.72rem; color: #fca5a5; font-weight: 700;" data-i18n="lblDossierLate60">تأخير شديد يتجاوز 60د</div>
+                            <div id="ai-dossier-late60" style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 4px;">0</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
+                            <div style="font-size: 0.72rem; color: #e9d5ff; font-weight: 700;" data-i18n="lblDossierAbsences">عدد أيام الغياب المسجلة</div>
+                            <div id="ai-dossier-absences" style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 4px;">0</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Narrative Evaluation for Employee -->
+                    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px; padding: 1.2rem;">
+                        <div style="font-size: 0.82rem; font-weight: 800; color: #c084fc; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span>🧠</span> <span data-i18n="lblDossierEvaluationTitle">التصنيف والتوصيات الذكية الخاصة بالموظف</span>
+                        </div>
+                        <div id="ai-dossier-narrative" style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.6;">
+                            -
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 AI KPI Metric Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.2rem; margin-bottom: 1.8rem;">
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.12);">
+                        <div style="color: #6ee7b7; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" data-i18n="aiKpiDiscipline">معدل الانضباط العام</div>
+                        <div id="ai-kpi-discipline" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">100%</div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.12);">
+                        <div style="color: #fcd34d; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" data-i18n="aiKpiWarnings">الإنذارات والخصومات المستحقة</div>
+                        <div id="ai-kpi-warnings" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.12);">
+                        <div style="color: #fca5a5; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" data-i18n="aiKpiSevere">تأخير شديد يتجاوز 60د</div>
+                        <div id="ai-kpi-severe" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">0</div>
+                    </div>
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 242, 254, 0.35); border-radius: 18px; padding: 1.3rem; backdrop-filter: blur(14px); box-shadow: 0 8px 25px rgba(0, 242, 254, 0.12);">
+                        <div style="color: #38bdf8; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" data-i18n="aiKpiOntime">نسبة الحضور بالوقت المحدد</div>
+                        <div id="ai-kpi-ontime" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 6px;">100%</div>
+                    </div>
+                </div>
+
+                <!-- AI Executive Summary & Narrative Box -->
+                <div style="margin-bottom: 1.8rem; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 18px; padding: 1.5rem; backdrop-filter: blur(14px);">
+                    <h3 style="margin: 0 0 0.8rem 0; font-size: 1.1rem; font-weight: 800; color: #e9d5ff; display: flex; align-items: center; gap: 8px;">
+                        <span>🧠</span> <span data-i18n="aiInsightsTitle">الملخص التكتيكي والتوصيات الإدارية (AI Executive Insights)</span>
+                    </h3>
+                    <div id="ai-insights-box" style="font-size: 0.95rem; line-height: 1.8; color: #f8fafc; background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)); padding: 20px 22px; border-radius: 16px; border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 8px 30px rgba(168, 85, 247, 0.15); backdrop-filter: blur(16px);">
+                        جاري تحليل بيانات الحضور والتأخير بواسطة خوارزميات الذكاء الاصطناعي... اضغط "تحديث التقرير التنفيذي" للحصول على التقرير التفاعلي.
+                    </div>
+                </div>
+
+                <!-- Employee Risk & Warning Matrix Table -->
+                <div style="border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.4); overflow-x: auto;">
+                    <h3 style="padding: 1.2rem 1.4rem 0.6rem 1.4rem; margin: 0; font-size: 1.05rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                        <span>⚖️</span> <span data-i18n="aiRiskMatrixTitle">جدول مصفوفة مخاطر انضباط الموظفين والتوصيات (Employee Discipline Risk Matrix)</span>
+                    </h3>
+                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.84rem; margin-top: 0.6rem;">
+                        <thead>
+                            <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.78rem; text-transform: uppercase;">
+                                <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThName">اسم الموظف</th>
+                                <th style="padding: 12px 14px; text-align: right;" data-i18n="adminThEmail">البريد الإلكتروني</th>
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thRating">تقييم الانضباط</th>
+                                <th style="padding: 12px 14px; text-align: center;" data-i18n="thWarningCount">عدد التنبيهات</th>
+                                <th style="padding: 12px 14px; text-align: right;" data-i18n="thAiDetails">تفاصيل التوصية بالذكاء الاصطناعي (AI Analysis)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ai-risk-matrix-body">
+                            <!-- Populated dynamically via script.js -->
+                        </tbody>
+                    </table>
+                    <div id="ai-matrix-pagination-container" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(15, 23, 42, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 10px;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating AI Chatbot Button & Chat Window (Cyber Glass Edition) -->
+    <div id="ai-chat-launcher" class="ai-chat-launcher-btn" onclick="toggleAIChatDrawer()" title="NexusLink AI Assistant">
+        <div class="chat-launcher-pulse"></div>
+        <span style="font-size: 26px; z-index: 2;">🤖</span>
+    </div>
+
+    <div id="ai-chat-drawer" class="ai-chat-drawer-card" style="display: none;">
+        <!-- Header -->
+        <div class="ai-chat-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="ai-bot-avatar">
+                    🤖
+                    <span class="online-indicator"></span>
+                </div>
+                <div class="ai-chat-title-wrap">
+                    <div class="ai-chat-title">
+                        <span id="ai-chat-title-text" data-i18n="aiChatTitle">NexusLink AI Assistant</span>
+                        <span id="ai-role-badge" class="ai-role-tag admin-badge">Executive</span>
+                    </div>
+                    <div class="ai-chat-subtitle" id="ai-chat-sub-text" data-i18n="aiChatSub">Neural Policy Engine • Active 24/7</div>
+                </div>
+            </div>
+            <div class="ai-chat-actions">
+                <button type="button" onclick="toggleAIChatMaximize()" id="ai-maximize-btn" class="ai-chat-maximize-btn" title="Toggle Size">⤢</button>
+                <button type="button" onclick="clearAIChatHistory()" class="ai-chat-action-btn" title="Clear Chat History">🗑️</button>
+                <button type="button" onclick="toggleAIChatDrawer()" class="ai-chat-close-btn" title="Close">✕</button>
+            </div>
+        </div>
+
+        <!-- Quick Options Bar (Semantic Policy Chips) -->
+        <div id="admin-ai-quick-options" class="ai-quick-options-container">
+            <!-- Populated dynamically via script.js -->
+        </div>
+
+        <!-- Messages Box -->
+        <div id="ai-chat-messages" class="ai-messages-container">
+            <!-- Populated dynamically via script.js -->
+        </div>
+
+        <!-- Input Form -->
+        <form onsubmit="sendAIChatMessage(event)" class="ai-chat-input-form">
+            <input type="text" id="ai-chat-input" class="ai-chat-input-field" placeholder="اسأل عن سياسات الدوام أو حضورك..." data-i18n-placeholder="aiChatPlaceholder" required autocomplete="off">
+            <button type="submit" id="ai-chat-send-btn" class="ai-chat-send-btn">
+                <span data-i18n="btnSend">إرسال</span> 🚀
+            </button>
+        </form>
+    </div>
+        </main>
+    </div>
+
+    <!-- Glassmorphic Backdrop Overlay -->
+    <div id="executive-backdrop" class="executive-backdrop" onclick="closeExecutiveModals()" style="display: none;"></div>
+
+    <!-- Modal 1: Add New Employee Account -->
+    <div id="modal-add-user" class="executive-glass-modal" style="display: none;">
+        <div class="modal-header-bar">
+            <h3 data-i18n="adminAddUserTitle"><span>👤</span> 1- Add New Employee Account</h3>
+            <button class="modal-close-btn" onclick="closeExecutiveModals()">✕</button>
+        </div>
+        <div class="modal-body-content">
+            <form id="admin-create-user-form-modal" onsubmit="submitAdminCreateUserModal(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminNewNameLabel">Full Name</label>
+                    <input type="text" id="admin-modal-new-name" required placeholder="John Doe" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminNewEmailLabel">Employee Email</label>
+                    <input type="email" id="admin-modal-new-email" required placeholder="name@nexuslink.com" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminNewPassLabel">Password</label>
+                    <input type="password" id="admin-modal-new-password" required placeholder="••••••••" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                </div>
+                <button type="submit" class="submit-btn" style="width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; margin-top: 10px; background: linear-gradient(135deg, #6366f1, #a855f7); border: none; color: #fff; cursor: pointer; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);" data-i18n="adminAddUserBtn">Add Employee Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Manually Log Attendance Record -->
+    <div id="modal-manual-log" class="executive-glass-modal" style="display: none;">
+        <div class="modal-header-bar">
+            <h3 data-i18n="adminManualTitle"><span>📝</span> 2- Manually Log Attendance Record</h3>
+            <button class="modal-close-btn" onclick="closeExecutiveModals()">✕</button>
+        </div>
+        <div class="modal-body-content">
+            <form id="admin-manual-log-form-modal" onsubmit="submitAdminManualLogModal(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminLogEmailLabel">Employee Email</label>
+                    <input type="email" id="admin-modal-log-email" required placeholder="name@nexuslink.com" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminLogNameLabel">Employee Name (Optional)</label>
+                    <input type="text" id="admin-modal-log-name" placeholder="John Doe" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 6px;" data-i18n="adminLogTypeLabel">Movement Type</label>
+                    <select id="admin-modal-log-type" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-family: inherit; outline: none;">
+                        <option value="check-in" data-i18n="optCheckin">Check In</option>
+                        <option value="check-out" data-i18n="optCheckout">Check Out</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn" style="width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; margin-top: 10px; background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; cursor: pointer; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);" data-i18n="adminManualSubmitBtn">Submit Attendance Record</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Submit Lateness Excuse (Enhanced UI & Full Bilinguality) -->
+    <div id="modal-submit-excuse" class="modal-overlay excuse-modal-overlay" style="display: none;">
+        <div class="excuse-modal-card">
+            <!-- Header -->
+            <div class="excuse-modal-header">
+                <div class="excuse-header-left">
+                    <div class="excuse-icon-badge">📝</div>
+                    <div>
+                        <h3 class="excuse-modal-title" data-i18n="excuseModalTitle">Submit Lateness Excuse</h3>
+                        <p class="excuse-modal-subtitle" data-i18n="excuseModalSub">Direct submission to HR & Management with AI-assisted verification</p>
+                    </div>
+                </div>
+                <button type="button" class="excuse-modal-close" onclick="closeExcuseModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <!-- Dynamic Policy Notice Banner (Supports HTML in EN & AR) -->
+            <div id="excuse-policy-notice" class="excuse-policy-notice-card" data-i18n-html="excusePolicyNotice">
+                💡 <strong>شرط الإثبات (policy.text):</strong> أعذار حوادث السير تتطلب إرفاق <strong>صورة الكروكة أو الحادث</strong>، والأعذار الصحية تتطلب إرفاق <strong>التقرير الطبي الرسمي</strong> للقبول الفوري.
+            </div>
+
+            <form id="form-submit-excuse" onsubmit="submitExcuseForm(event)" class="excuse-form">
+                <!-- Detailed Reason Input -->
+                <div class="excuse-input-group">
+                    <label class="excuse-input-label" for="excuse-reason-text" data-i18n="excuseReasonLabel">Detailed Reason for Delay to Manager:</label>
+                    <textarea id="excuse-reason-text" class="excuse-textarea" required rows="3" placeholder="Type your excuse reason here (e.g., vehicle breakdown, health emergency...)" data-i18n-placeholder="excuseReasonPlaceholder"></textarea>
+                </div>
+
+                <!-- Proof Attachment Upload Box -->
+                <div class="excuse-input-group">
+                    <label class="excuse-input-label" data-i18n="excuseAttachmentLabel">📷 Attach Proof Document (Accident Kroka / Medical Report - Optional):</label>
+                    <div class="proof-upload-dropzone" id="proof-upload-dropzone" onclick="document.getElementById('excuse-attachment-file').click()">
+                        <input type="file" id="excuse-attachment-file" accept="image/*,.pdf" style="display: none;" onchange="handleExcuseFileSelect(event)">
+                        
+                        <div id="proof-upload-prompt" class="proof-upload-prompt-wrap">
+                            <div class="proof-upload-icon-pulse">📸</div>
+                            <div class="proof-upload-main-text" data-i18n="excuseDropzonePrompt">Click or drag & drop proof document here</div>
+                            <div class="proof-upload-sub-text" data-i18n="excuseDropzoneSub">(Supports JPG, PNG, GIF, WebP, PDF - Max 10MB)</div>
+                        </div>
+
+                        <div id="proof-upload-preview" class="proof-upload-preview-wrap" style="display: none;">
+                            <div class="proof-preview-info">
+                                <img id="proof-preview-img" src="" alt="Proof" class="proof-preview-thumb" style="display: none;">
+                                <div id="proof-preview-doc-icon" class="proof-preview-doc-icon" style="display: none;">📄</div>
+                                <div class="proof-file-details">
+                                    <div id="proof-file-name" class="proof-file-name">--</div>
+                                    <div id="proof-file-size" class="proof-file-size">--</div>
+                                </div>
+                            </div>
+                            <button type="button" class="proof-remove-pill" onclick="clearExcuseFile(event)" data-i18n="excuseDeleteProof">✕ Remove</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="excuse-modal-footer">
+                    <button type="button" class="excuse-btn-cancel" onclick="closeExcuseModal()" data-i18n="btnCancel">Cancel</button>
+                    <button type="submit" class="excuse-btn-submit" id="btn-submit-excuse-action" data-i18n="btnSubmitExcuseSubmit">Submit Excuse to Manager 🚀</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Fullscreen Proof Lightbox Modal -->
+    <div id="proof-lightbox-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; z-index: 11000; background: rgba(10, 15, 30, 0.88); backdrop-filter: blur(16px); align-items: center; justify-content: center; padding: 20px;">
+        <div class="proof-lightbox-card">
+            <div class="proof-lightbox-header">
+                <h4 id="proof-lightbox-title" data-i18n="lightboxTitle">
+                    <span>🖼️</span> <span>معاينة وثيقة الإثبات (الكروكة / التقرير الطبي)</span>
+                </h4>
+                <button type="button" onclick="closeProofLightbox()" class="proof-lightbox-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="proof-lightbox-body">
+                <img id="proof-lightbox-img" src="" alt="Proof Preview" class="proof-lightbox-image">
+            </div>
+            <div class="proof-lightbox-footer">
+                <a id="proof-lightbox-download" href="#" target="_blank" download class="proof-download-btn" data-i18n="lightboxDownload">⬇️ Download File</a>
+                <button type="button" onclick="closeProofLightbox()" class="excuse-btn-cancel" data-i18n="lightboxClose">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load external unified Javascript logic -->
+    <script src="script.js"></script>
+</body>
+
+</html>

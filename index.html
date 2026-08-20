@@ -332,15 +332,51 @@
 
         <!-- Messages Box -->
         <div id="ai-chat-messages" class="ai-messages-container">
-            <!-- Populated dynamically via script.js -->
+            <div class="ai-msg bot-msg welcome-bot-card">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                    <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #a855f7, #6366f1); display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 0 12px rgba(168,85,247,0.5); flex-shrink:0;">✨</div>
+                    <div>
+                        <div style="font-weight:800; color:#fff; font-size:0.96rem;">مرحباً بك في المساعد الذكي لنظام NexusLink</div>
+                        <div style="font-size:0.78rem; color:#94a3b8;">كيف يمكنني مساعدتك في سياسات وسجلات الدوام اليوم؟</div>
+                    </div>
+                </div>
+                <div class="welcome-style-a-grid">
+                    <div class="style-a-tile status" onclick="selectAdminAiOption('mystatus')">
+                        <div class="style-a-icon">🕒</div>
+                        <div class="style-a-text">
+                            <div class="style-a-title">حالة حضوري</div>
+                            <div class="style-a-sub">فحص الدخول والتأخير</div>
+                        </div>
+                    </div>
+                    <div class="style-a-tile lateness" onclick="selectAdminAiOption('lateness')">
+                        <div class="style-a-icon">⚠️</div>
+                        <div class="style-a-text">
+                            <div class="style-a-title">فترة السماح</div>
+                            <div class="style-a-sub">15 دقيقة والخصم</div>
+                        </div>
+                    </div>
+                    <div class="style-a-tile excuse" onclick="selectAdminAiOption('excuse_rules')">
+                        <div class="style-a-icon">📝</div>
+                        <div class="style-a-text">
+                            <div class="style-a-title">الأعذار والإثبات</div>
+                            <div class="style-a-sub">الكروكة والتقارير</div>
+                        </div>
+                    </div>
+                    <div class="style-a-tile leaves" onclick="selectAdminAiOption('leaves')">
+                        <div class="style-a-icon">🌴</div>
+                        <div class="style-a-text">
+                            <div class="style-a-title">الإجازات</div>
+                            <div class="style-a-sub">رصيد 14 يوم والمرضية</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Input Form -->
         <form onsubmit="sendAIChatMessage(event)" class="ai-chat-input-form">
             <input type="text" id="ai-chat-input" class="ai-chat-input-field" placeholder="اسأل عن سياسات الدوام أو حضورك..." data-i18n-placeholder="aiChatPlaceholder" required autocomplete="off">
-            <button type="submit" id="ai-chat-send-btn" class="ai-chat-send-btn">
-                <span data-i18n="btnSend">إرسال</span> 🚀
-            </button>
+            <button type="submit" id="ai-chat-send-btn" class="ai-chat-send-btn" title="Send">🚀</button>
         </form>
     </div>
 

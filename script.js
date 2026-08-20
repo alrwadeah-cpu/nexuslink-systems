@@ -524,6 +524,13 @@ function updatePageTexts() {
         }
     }
     
+    // Auto-render AI Welcome card in active language if no conversation has started
+    const msgBox = document.getElementById('ai-chat-messages');
+    const hasActiveMessages = msgBox && msgBox.querySelectorAll('.user-msg, .ai-resp-card').length > 0;
+    if (!hasActiveMessages) {
+        clearAIChatHistory();
+    }
+
     // Update Greeting and re-render dynamic tables on dashboard if available
     if (isDashboard) {
         const nameDisplay = document.getElementById('user-name-display');
@@ -558,6 +565,7 @@ function toggleLanguage() {
     currentLang = (currentLang === 'en') ? 'ar' : 'en';
     localStorage.setItem('lang', currentLang);
     updatePageTexts();
+    clearAIChatHistory();
 }
 
 /* === LOGIN PAGE LOGIC === */
@@ -2797,6 +2805,11 @@ function toggleAIChatDrawer() {
     if (!drawer) return;
     if (drawer.style.display === 'none' || !drawer.style.display) {
         updateAiQuickOptionsUI();
+        const msgBox = document.getElementById('ai-chat-messages');
+        const hasMessages = msgBox && msgBox.querySelectorAll('.user-msg, .ai-resp-card').length > 0;
+        if (!hasMessages) {
+            clearAIChatHistory();
+        }
         drawer.style.display = 'flex';
         const inp = document.getElementById('ai-chat-input');
         if (inp) inp.focus();
@@ -2824,6 +2837,7 @@ function copyAiResponse(btn) {
 }
 
 function clearAIChatHistory() {
+    window._aiChatMemory = [];
     const msgBox = document.getElementById('ai-chat-messages');
     if (!msgBox) return;
     const isAr = currentLang === 'ar';
@@ -2831,46 +2845,147 @@ function clearAIChatHistory() {
     const isAdmin = isAdminEmail(email);
 
     const welcomeHeader = isAr 
-        ? `👋 <strong>مرحباً بك في المساعد الذكي لنظام NexusLink</strong>`
-        : `👋 <strong>Welcome to NexusLink Neural AI Assistant</strong>`;
+        ? `مرحباً بك في المساعد الذكي لنظام NexusLink`
+        : `Welcome to NexusLink AI`;
 
     const welcomeDesc = isAr
-        ? `محرك استعلامات عصبي متطور ومربوط بلائحة العمل المعتمدة (<code style="color:#c084fc;">policy.text</code>) وسجلات الدوام الفورية. اختر أحد المقترحات أدناه أو اسأل عن أي تفصيل:`
-        : `Advanced Neural Policy & Shift Intelligence Engine grounded in company policy (<code style="color:#c084fc;">policy.text</code>) and real-time attendance logs. Select a quick option below or ask anything:`;
+        ? `كيف يمكنني مساعدتك في سياسات وسجلات الدوام اليوم؟`
+        : `How can I assist you with your attendance today?`;
 
-    const pillsHTML = isAr ? `
-        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+    const tilesHTML = isAr ? `
+        <div class="welcome-style-a-grid">
             ${isAdmin 
-                ? `<span class="welcome-pill-btn" onclick="selectAdminAiOption('summary')">📊 ملخص دوام اليوم</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('excuses')">📑 فحص وتدقيق الأعذار</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('lateness')">⚠️ قواعد التأخير والخصم</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('roster')">👥 كادر الموظفين</span>`
-                : `<span class="welcome-pill-btn" onclick="selectAdminAiOption('mystatus')">🕒 حالة حضوري اليوم</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('lateness')">⚠️ فترة السماح والخصومات</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('hours')">📅 ساعات الدوام الرسمي</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('excuse_rules')">📝 شروط الأعذار والكروكة</span>`
+                ? `<div class="style-a-tile status" onclick="selectAdminAiOption('summary')">
+                       <div class="style-a-icon">📊</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">ملخص اليوم</div>
+                           <div class="style-a-sub">الحضور المباشر</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile lateness" onclick="selectAdminAiOption('excuses')">
+                       <div class="style-a-icon">📑</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">تدقيق الأعذار</div>
+                           <div class="style-a-sub">فحص الطلبات</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile excuse" onclick="selectAdminAiOption('lateness')">
+                       <div class="style-a-icon">⚠️</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">قواعد التأخير</div>
+                           <div class="style-a-sub">الخصم والإنذارات</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile leaves" onclick="selectAdminAiOption('roster')">
+                       <div class="style-a-icon">👥</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">كادر الموظفين</div>
+                           <div class="style-a-sub">سجلات الكادر</div>
+                       </div>
+                   </div>`
+                : `<div class="style-a-tile status" onclick="selectAdminAiOption('mystatus')">
+                       <div class="style-a-icon">🕒</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">حالة حضوري</div>
+                           <div class="style-a-sub">فحص الدخول والتأخير</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile lateness" onclick="selectAdminAiOption('lateness')">
+                       <div class="style-a-icon">⚠️</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">فترة السماح</div>
+                           <div class="style-a-sub">15 دقيقة والخصم</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile excuse" onclick="selectAdminAiOption('excuse_rules')">
+                       <div class="style-a-icon">📝</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">الأعذار والإثبات</div>
+                           <div class="style-a-sub">الكروكة والتقارير</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile leaves" onclick="selectAdminAiOption('leaves')">
+                       <div class="style-a-icon">🌴</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">الإجازات</div>
+                           <div class="style-a-sub">رصيد 14 يوم والمرضية</div>
+                       </div>
+                   </div>`
             }
         </div>
     ` : `
-        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+        <div class="welcome-style-a-grid">
             ${isAdmin 
-                ? `<span class="welcome-pill-btn" onclick="selectAdminAiOption('summary')">📊 Today's Summary</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('excuses')">📑 Excuses Audit</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('lateness')">⚠️ Lateness & Penalties</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('roster')">👥 Workforce Roster</span>`
-                : `<span class="welcome-pill-btn" onclick="selectAdminAiOption('mystatus')">🕒 My Status Today</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('lateness')">⚠️ Grace & Penalties</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('hours')">📅 Shift Hours</span>
-                   <span class="welcome-pill-btn" onclick="selectAdminAiOption('excuse_rules')">📝 Excuse Guidelines & Proof</span>`
+                ? `<div class="style-a-tile status" onclick="selectAdminAiOption('summary')">
+                       <div class="style-a-icon">📊</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Today's Summary</div>
+                           <div class="style-a-sub">Live stats</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile lateness" onclick="selectAdminAiOption('excuses')">
+                       <div class="style-a-icon">📑</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Excuses Audit</div>
+                           <div class="style-a-sub">Review proofs</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile excuse" onclick="selectAdminAiOption('lateness')">
+                       <div class="style-a-icon">⚠️</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Lateness Rules</div>
+                           <div class="style-a-sub">Penalties</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile leaves" onclick="selectAdminAiOption('roster')">
+                       <div class="style-a-icon">👥</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Workforce</div>
+                           <div class="style-a-sub">Staff profiles</div>
+                       </div>
+                   </div>`
+                : `<div class="style-a-tile status" onclick="selectAdminAiOption('mystatus')">
+                       <div class="style-a-icon">🕒</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">My Status</div>
+                           <div class="style-a-sub">Check-in & delay</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile lateness" onclick="selectAdminAiOption('lateness')">
+                       <div class="style-a-icon">⚠️</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Grace Period</div>
+                           <div class="style-a-sub">15m & deductions</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile excuse" onclick="selectAdminAiOption('excuse_rules')">
+                       <div class="style-a-icon">📝</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Excuses</div>
+                           <div class="style-a-sub">Medical & proof</div>
+                       </div>
+                   </div>
+                   <div class="style-a-tile leaves" onclick="selectAdminAiOption('leaves')">
+                       <div class="style-a-icon">🌴</div>
+                       <div class="style-a-text">
+                           <div class="style-a-title">Leaves</div>
+                           <div class="style-a-sub">14d & sick leave</div>
+                       </div>
+                   </div>`
             }
         </div>
     `;
 
     msgBox.innerHTML = `
-        <div class="ai-msg bot-msg welcome-bot-card" data-i18n="aiChatWelcome">
-            ${welcomeHeader}<br>
-            <span style="font-size:0.83rem; color:#cbd5e1; display:inline-block; margin-top:4px;">${welcomeDesc}</span>
-            ${pillsHTML}
+        <div class="ai-msg bot-msg welcome-bot-card" style="${isAr ? 'direction:rtl; text-align:right;' : 'direction:ltr; text-align:left;'}">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #a855f7, #6366f1); display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 0 12px rgba(168,85,247,0.5); flex-shrink:0;">✨</div>
+                <div>
+                    <div style="font-weight:800; color:#fff; font-size:0.96rem;">${welcomeHeader}</div>
+                    <div style="font-size:0.78rem; color:#94a3b8;">${welcomeDesc}</div>
+                </div>
+            </div>
+            ${tilesHTML}
         </div>
     `;
 }
@@ -2885,6 +3000,7 @@ function selectAdminAiOption(optionKey) {
         'lateness': 'قواعد التأخير وفترة السماح والخصومات',
         'logging': 'آلية وقواعد تسجيل الحضور والانصراف',
         'excuse_rules': 'شروط ومهلة تقديم الأعذار والكروكة والتقارير الطبية',
+        'leaves': 'ما هي ضوابط الإجازات السنوية والإجازات المرضية؟',
         'summary': 'الملخص الذكي لدوام اليوم',
         'roster': 'قائمة الموظفين في قاعدة البيانات',
         'excuses': 'متابعة وفحص طلبات الأعذار والإثباتات',
@@ -2896,6 +3012,7 @@ function selectAdminAiOption(optionKey) {
         'lateness': 'Lateness rules, grace period, and deductions',
         'logging': 'Attendance check-in and check-out rules',
         'excuse_rules': 'Excuse submission deadline, Kroka and medical proof rules',
+        'leaves': 'Annual and sick leave policy and requirements',
         'summary': "Today's smart attendance summary",
         'roster': 'Registered employee roster',
         'excuses': 'Excuses and proof audit report',
@@ -2927,8 +3044,10 @@ async function sendAIChatMessage(event) {
     if (!query) return;
 
     // Append user message
+    const userIsAr = /[\u0600-\u06FF]/.test(query);
+    const userDir = userIsAr ? 'direction:rtl; text-align:right;' : 'direction:ltr; text-align:left;';
     msgBox.innerHTML += `
-        <div class="ai-msg user-msg">
+        <div class="ai-msg user-msg" style="${userDir}">
             ${query}
         </div>
     `;
@@ -2939,16 +3058,20 @@ async function sendAIChatMessage(event) {
     const loadingId = 'ai-loading-' + Date.now();
     const isAr = currentLang === 'ar';
     msgBox.innerHTML += `
-        <div id="${loadingId}" class="ai-typing-indicator">
+        <div id="${loadingId}" class="ai-typing-indicator" style="${isAr ? 'direction:rtl;' : 'direction:ltr;'}">
             <span class="ai-typing-dot"></span>
             <span class="ai-typing-dot"></span>
             <span class="ai-typing-dot"></span>
-            <span style="font-size: 0.78rem; color: #c084fc; font-weight:700; margin-inline-start: 6px;">${isAr ? '🧠 جاري مراجعة لائحة العمل وتدقيق السجلات...' : '🧠 Neural Policy Engine Grounding...'}</span>
+            <span style="font-size: 0.78rem; color: #c084fc; font-weight:700; margin-inline-start: 6px;">${isAr ? '🧠 جاري مراجعة لائحة العمل وتدقيق السجلات...' : '🧠 Reviewing policy guidelines & records...'}</span>
         </div>
     `;
     msgBox.scrollTop = msgBox.scrollHeight;
 
     try {
+        window._aiChatMemory = window._aiChatMemory || [];
+        const historySnapshot = window._aiChatMemory.slice(-6);
+        window._aiChatMemory.push({ role: 'user', content: query });
+
         const token = localStorage.getItem('userToken');
         const email = localStorage.getItem('userEmail');
         const res = await fetch(`${API_BASE}/api/ai/chat`, {
@@ -2957,24 +3080,41 @@ async function sendAIChatMessage(event) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ message: query, email: email, lang: currentLang })
+            body: JSON.stringify({ 
+                message: query, 
+                history: historySnapshot,
+                email: email, 
+                lang: currentLang 
+            })
         });
         const data = await res.json();
         const loadEl = document.getElementById(loadingId);
         if (loadEl) loadEl.remove();
 
         const rawReply = data.response || (isAr ? "عذراً، حدث خطأ أثناء الاتصال بالذكاء الاصطناعي." : "Sorry, an error occurred while connecting to AI.");
+        window._aiChatMemory.push({ role: 'assistant', content: rawReply });
+        if (window._aiChatMemory.length > 12) {
+            window._aiChatMemory = window._aiChatMemory.slice(-12);
+        }
+
+        const containsArabic = /[\u0600-\u06FF]/.test(rawReply);
+        const replyDir = (isAr || containsArabic) ? 'direction:rtl; text-align:right;' : 'direction:ltr; text-align:left;';
         
         msgBox.innerHTML += `
-            <div class="ai-msg bot-msg">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
-                    <div style="display:flex; align-items:center; gap:6px; font-size:0.76rem; color:#c084fc; font-weight:700;">
-                        <span>✨ NexusLink Neural Core</span>
-                        <span style="font-size:0.65rem; background:rgba(168,85,247,0.2); color:#e9d5ff; padding:1px 6px; border-radius:6px; border:1px solid rgba(168,85,247,0.35);">RAG VERIFIED</span>
+            <div class="ai-msg bot-msg" style="background: rgba(14, 20, 36, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; padding: 14px 18px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); backdrop-filter: blur(16px);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #a855f7, #6366f1); display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 0 10px rgba(168, 85, 247, 0.5);">✨</div>
+                        <span style="font-weight:800; font-size:0.86rem; color:#f1f5f9; letter-spacing:0.2px;">NexusLink Intelligence</span>
+                        <span style="width:6px; height:6px; border-radius:50%; background:#34d399; display:inline-block; box-shadow:0 0 6px #34d399;" title="Online"></span>
                     </div>
-                    <button type="button" onclick="copyAiResponse(this)" style="background:none; border:none; color:#94a3b8; font-size:0.75rem; cursor:pointer; padding:2px 6px; border-radius:6px; transition:color 0.2s;" title="Copy Response">📋 ${isAr ? 'نسخ' : 'Copy'}</button>
+                    <button type="button" onclick="copyAiResponse(this)" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; border-radius:8px; padding:3px 8px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px; transition:all 0.2s;" title="Copy Response" onmouseover="this.style.background='rgba(168,85,247,0.25)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#94a3b8';">
+                        <span>📋</span> <span>${isAr ? 'نسخ' : 'Copy'}</span>
+                    </button>
                 </div>
-                ${rawReply}
+                <div class="ai-msg-body" style="color:#f8fafc; font-size:0.92rem; line-height:1.7; ${replyDir}">
+                    ${rawReply}
+                </div>
             </div>
         `;
         msgBox.scrollTop = msgBox.scrollHeight;

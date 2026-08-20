@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, date, timedelta
 from database import fetch_query, execute_query
 from pydantic import BaseModel
-from typing import Optional, Literal, Union
+from typing import Optional, Literal, Union, List, Dict, Any
 import base64
 import json
 import hmac
@@ -13,7 +13,7 @@ import hashlib
 import time
 import os
 import re
-from rag_engine import evaluate_semantic_excuse, get_policy_text, get_all_policy_chunks, retrieve_relevant_chunks
+from rag_engine import evaluate_semantic_excuse, get_policy_text, get_all_policy_chunks, retrieve_relevant_chunks, answer_qa_with_sources
 
 # Automatically load .env configuration
 def _load_env_file():
@@ -366,8 +366,9 @@ async def get_all_attendance(current_user: dict = Depends(get_current_user)):
             if is_checkin_log(log_type):
                 user_checkins[email_lower].add(date_str)
                 
+            user_real_name = user_map.get(email_lower) or user_map.get(email) or (email.split('@')[0] if email else "غير معروف")
             records.append({
-                "name": name,
+                "name": user_real_name,
                 "email": email,
                 "type": type_ar,
                 "date": date_str,
@@ -869,14 +870,137 @@ async def action_excuse(data: ExcuseActionRequest, current_user: Optional[dict] 
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-class AIChatRequest(BaseModel):
-    message: str
+# ==============================================================================
+# ASK API: PRECISION QUESTION ANSWERING WITH SOURCES & GROUNDED POLICY CITATIONS
+# ==============================================================================
+
+class AskRequest(BaseModel):
+    question: str
     email: Optional[str] = None
     lang: Optional[str] = "ar"
 
+def get_user_summary_context(user_email: str, user_dict: Optional[dict] = None) -> Optional[dict]:
+    if not user_email:
+        return None
+    try:
+        user_logs = get_user_logs_with_absences(user_email)
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_log = next((l for l in user_logs if l["date"] == today_str), None)
+        
+        # Fetch user name from DB or dict
+        u_name = user_dict.get("name") if (user_dict and user_dict.get("name")) else None
+        if not u_name:
+            u_row = fetch_query("SELECT name FROM user3 WHERE LOWER(email) = ?", (user_email,))
+            u_name = u_row[0]["name"] if u_row else user_email.split("@")[0]
+
+        present_days = len([l for l in user_logs if l.get("in") and l.get("in") != "--:--"])
+        absent_days = len([l for l in user_logs if not l.get("in") or l.get("in") == "--:--"])
+        late_count = len([l for l in user_logs if l.get("in") and l.get("in") > "09:15"])
+
+        return {
+            "name": u_name,
+            "email": user_email,
+            "checked_in": bool(today_log and today_log.get("in") != "--:--"),
+            "checkin_time": today_log.get("in") if (today_log and today_log.get("in") != "--:--") else None,
+            "is_late": (today_log.get("in", "--:--") > "09:15") if (today_log and today_log.get("in") != "--:--") else False,
+            "present_days": present_days,
+            "absent_days": absent_days,
+            "late_count": late_count
+        }
+    except Exception as e:
+        print("get_user_summary_context error:", e)
+        return None
+
+async def _process_ask_query(question: str, email: Optional[str] = None, lang: Optional[str] = "ar", current_user: Optional[Union[dict, object]] = None) -> dict:
+    user_dict = current_user if isinstance(current_user, dict) else {}
+    token_email = (user_dict.get("email", "")).strip().lower()
+    user_email = (email or token_email).strip().lower()
+    
+    # Determine user role
+    if is_admin_email(token_email) or is_admin_email(user_email):
+        user_role = "admin"
+    elif user_email:
+        user_role = "employee"
+    else:
+        user_role = "guest"
+
+    user_logs_summary = get_user_summary_context(user_email, user_dict)
+
+
+    team_stats_summary = None
+    if user_role == "admin":
+        try:
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            emps = get_all_employees()
+            real_emps = [e for e in emps if not (e["email"].startswith("emp_") or e["email"].startswith("test_user_") or e["email"] == "test_user@nexuslink.com")]
+            today_records = fetch_query("SELECT email, type, time FROM attendance WHERE time LIKE ?", (f"{today_str}%",))
+            
+            present_dict = {}
+            for r in today_records:
+                em = r["email"].strip().lower()
+                t_type = (r["type"] or "").lower()
+                full_time = r["time"] or ""
+                t_time = full_time.split(" ")[1] if len(full_time.split(" ")) > 1 else full_time
+                if is_checkin_log(t_type) and t_time:
+                    if em not in present_dict or t_time < present_dict[em]:
+                        present_dict[em] = t_time
+
+            late_dict = {em: tm for em, tm in present_dict.items() if is_time_after(tm, "09:15:00")}
+            severe_late_dict = {em: tm for em, tm in present_dict.items() if is_time_after(tm, "10:00:00")}
+
+            present_count = len(present_dict)
+            total_count = len(real_emps) or 21
+            absent_count = max(0, total_count - present_count)
+            late_count = len(late_dict)
+            severe_late_count = len(severe_late_dict)
+
+            team_stats_summary = {
+                "present_count": present_count,
+                "total_count": total_count,
+                "absent_count": absent_count,
+                "late_count": late_count,
+                "severe_late_count": severe_late_count
+            }
+        except Exception:
+            pass
+
+    result = answer_qa_with_sources(
+        question=question,
+        user_email=user_email,
+        user_role=user_role,
+        user_logs_summary=user_logs_summary,
+        team_stats_summary=team_stats_summary,
+        lang=lang or "ar"
+    )
+    result["timestamp"] = datetime.now().isoformat()
+    return result
+
+@app.post("/api/ask")
+@app.post("/ask")
+async def ask_api_post(data: AskRequest, current_user: Optional[dict] = Depends(get_current_user_optional)):
+    return await _process_ask_query(question=data.question, email=data.email, lang=data.lang, current_user=current_user)
+
+@app.get("/api/ask")
+@app.get("/ask")
+async def ask_api_get(q: Optional[str] = None, question: Optional[str] = None, email: Optional[str] = None, lang: Optional[str] = "ar", current_user: Optional[dict] = Depends(get_current_user_optional)):
+    target_q = (q or question or "").strip()
+    if not target_q:
+        raise HTTPException(status_code=400, detail="Missing query parameter 'q' or 'question'")
+    return await _process_ask_query(question=target_q, email=email, lang=lang, current_user=current_user)
+
+
+class AIChatRequest(BaseModel):
+    message: str
+    history: Optional[List[Dict[str, Any]]] = []
+    email: Optional[str] = None
+    lang: Optional[str] = "ar"
+
+
 @app.post("/api/ai/chat")
 async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(get_current_user_optional)):
-    token_email = (current_user.get("email", "") if current_user else "").strip().lower()
+    curr_dict = current_user if isinstance(current_user, dict) else {}
+    token_email = curr_dict.get("email", "").strip().lower()
+
     user_email = (data.email or token_email).strip().lower()
     query = data.message.strip()
     query_lower = query.lower()
@@ -1047,23 +1171,240 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 <div style="font-size:0.78rem; color:#c084fc; margin-top:8px; text-align:left;">💡 Click <strong>"View Dossier"</strong> next to any employee to inspect their attendance history!</div>"""
         return {"success": True, "response": resp}
 
-    # 3. Check if this is an employee detail query
-    if "تفاصيل الموظف:" in query or "تفاصيل الموظف" in query or "employee details:" in query_lower or "view dossier:" in query_lower:
-        target = query.replace("تفاصيل الموظف:", "").replace("تفاصيل الموظف", "").replace("Employee Details:", "").replace("view dossier:", "").strip()
-        all_emps = get_all_employees()
-        match_emp = next((e for e in all_emps if target.lower() in e["email"].lower() or target.lower() in e["name"].lower()), None)
-        if match_emp:
-            resp = generate_employee_attendance_report(match_emp["email"], match_emp["name"])
-            return {"success": True, "response": resp}
-        elif "@" in target:
-            resp = generate_employee_attendance_report(target)
-            return {"success": True, "response": resp}
-        else:
-            not_found = f"لم يتم العثور على الموظف '{target}'." if is_ar else f"Employee '{target}' not found."
-            return {"success": True, "response": not_found}
+    # 3. Check if query is about a specific employee (e.g. "انس احمد ؟", "علاء داوم؟", "سجل علاء", "كم غياب عند علاء", "فيصل اجا؟")
+    all_emps = get_all_employees()
+    found_emp = None
+    best_score = 0
+    
+    arabic_name_map = {
+        "علاء": "alaa",
+        "احمد": "ahmad",
+        "أحمد": "ahmad",
+        "انس": "anas",
+        "أنس": "anas",
+        "فيصل": "faisal",
+        "عمر": "omar",
+        "يوسف": "yousef",
+        "سيرين": "sereen",
+        "خليل": "khalil",
+        "بوش": "bush"
+    }
 
-    # 4. Section 01: Working Days & Hours
-    if query == "1" or "1." in query or any(k in query_lower for k in ["أيام وأوقات", "ساعات الدوام", "أوقات العمل", "ساعات العمل", "مواعيد الدوام", "أيام العمل", "working hours", "shift hours", "shift days", "work days", "schedule"]):
+    for emp in all_emps:
+        emp_name = (emp.get("name") or "").strip().lower().replace("-", " ")
+        emp_email = (emp.get("email") or "").strip().lower()
+        emp_email_prefix = emp_email.split("@")[0].replace("-", " ")
+        name_parts = emp_name.split()
+        first_name = name_parts[0] if name_parts else ""
+        
+        score = 0
+        
+        # Check direct Arabic name matches
+        for ar_name, en_equiv in arabic_name_map.items():
+            if ar_name in query_lower:
+                if first_name == en_equiv or emp_email_prefix.startswith(en_equiv):
+                    score += 60
+                elif en_equiv in emp_name or en_equiv in emp_email:
+                    score += 25
+        
+        # Check English/exact tokens in query
+        if emp_name and emp_name in query_lower:
+            score += 100
+        if first_name and len(first_name) >= 3 and first_name in query_lower:
+            score += 50
+        if emp_email in query_lower or emp_email_prefix in query_lower:
+            score += 70
+
+        if score > best_score and score >= 50:
+            best_score = score
+            found_emp = emp
+
+    if found_emp and user_is_admin:
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        emp_email_clean = found_emp["email"].strip().lower()
+        emp_display_name = found_emp["name"]
+
+        # Today's check-in
+        today_records = fetch_query("SELECT type, time FROM attendance WHERE LOWER(email) = ? AND time LIKE ? ORDER BY id ASC", (emp_email_clean, f"{today_str}%"))
+        t_in = None
+        for tr in today_records:
+            t_type = (tr["type"] or "").lower()
+            if is_checkin_log(t_type):
+                full_t = tr["time"] or ""
+                parts = full_t.split(" ")
+                t_in = parts[1][:5] if len(parts) > 1 else full_t[:5]
+                break
+
+        # Cumulative logs
+        u_logs = get_user_logs_with_absences(emp_email_clean)
+        pres_cnt = sum(1 for l in u_logs if l.get("status") == "recorded" or l.get("in", "--:--") != "--:--")
+        abs_cnt = sum(1 for l in u_logs if l.get("status") == "absent" or (l.get("in") == "--:--" and l.get("out") == "--:--"))
+        late_cnt = sum(1 for l in u_logs if l.get("in", "--:--") > "09:15" and l.get("in", "--:--") != "--:--")
+
+        # Specific questions on the employee:
+        # A) Did he check-in / attend today? ("داوم؟", "اجا؟", "مداوم؟", "حضر؟", "موجود؟", "did he check in", "present today")
+        if any(k in query_lower for k in ["داوم", "اجا", "إجا", "حضر", "موجود", "مداوم", "وصل", "سجل دخول", "did he check in", "present today", "checked in"]):
+            if t_in:
+                is_late = t_in > "09:15"
+                if is_ar:
+                    status_text = f"متأخر بعد فترة السماح ({t_in})" if is_late else f"في الوقت المحدد ({t_in})"
+                    color = "#fbbf24" if is_late else "#34d399"
+                    resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">حالة دوام الموظف {emp_display_name} اليوم ({today_str}):</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🟢 <strong>نعم، داوم اليوم؛</strong> تم تسجيل دخوله في الساعة <strong style="color:{color};">{t_in}</strong> ({status_text}).
+</div>"""
+                else:
+                    status_text = f"Late past grace period ({t_in})" if is_late else f"On Time ({t_in})"
+                    color = "#fbbf24" if is_late else "#34d399"
+                    resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">Status for {emp_display_name} Today ({today_str}):</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🟢 <strong>Yes, checked in today</strong> at <strong style="color:{color};">{t_in}</strong> ({status_text}).
+</div>"""
+            else:
+                if is_ar:
+                    resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">حالة دوام الموظف {emp_display_name} اليوم ({today_str}):</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🔴 <strong>لا، لم يسجل دخوله اليوم حتى الآن</strong> (يُعتبر غائباً ما لم يسجل قبل 10:00 ص أو يقدم عذراً رسمياً).
+</div>"""
+                else:
+                    resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">Status for {emp_display_name} Today ({today_str}):</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🔴 <strong>No, has not checked in today yet</strong> (marked absent unless checked in before 10:00 AM or submits an official excuse).
+</div>"""
+            return {"success": True, "response": resp}
+
+        # B) Is he late today? ("متأخر؟", "تأخر؟", "is he late", "late today")
+        elif any(k in query_lower for k in ["متأخر", "متاخر", "تاخر", "تأخر", "late"]):
+            if t_in:
+                is_late = t_in > "09:15"
+                if is_late:
+                    if is_ar:
+                        resp = f"""🕒 <strong style="color:#fbbf24; font-size:1.02rem;">تأخير الموظف {emp_display_name} اليوم:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    ⚠️ <strong>نعم، متأخر اليوم؛</strong> سجل دخوله في الساعة <strong>{t_in}</strong> بعد انتهاء فترة السماح (09:15 ص).
+</div>"""
+                    else:
+                        resp = f"""🕒 <strong style="color:#fbbf24; font-size:1.02rem;">Lateness for {emp_display_name} Today:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    ⚠️ <strong>Yes, late today;</strong> checked in at <strong>{t_in}</strong> past the allowed 09:15 AM grace window.
+</div>"""
+                else:
+                    if is_ar:
+                        resp = f"""🕒 <strong style="color:#34d399; font-size:1.02rem;">انضباط الموظف {emp_display_name} اليوم:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🟢 <strong>لا، ليس متأخراً؛</strong> سجل دخوله في الساعة <strong>{t_in}</strong> ضمن فترة السماح المحددة.
+</div>"""
+                    else:
+                        resp = f"""🕒 <strong style="color:#34d399; font-size:1.02rem;">Discipline for {emp_display_name} Today:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🟢 <strong>No, not late;</strong> checked in at <strong>{t_in}</strong> within the allowed grace window.
+</div>"""
+            else:
+                if is_ar:
+                    resp = f"""🕒 <strong style="color:#f87171; font-size:1.02rem;">الموظف {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🔴 <strong>لم يسجل دخوله اليوم حتى الآن</strong> (غير متواجد).
+</div>"""
+                else:
+                    resp = f"""🕒 <strong style="color:#f87171; font-size:1.02rem;">Employee {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    🔴 <strong>Not checked in today yet</strong> (absent).
+</div>"""
+            return {"success": True, "response": resp}
+
+        # C) Absences and Statistics ("كم غياب", "كم تاخير", "احصائيات", "absences", "stats")
+        elif any(k in query_lower for k in ["كم غياب", "كم يوم غاب", "كم تأخير", "كم تاخير", "احصائيات", "إحصائيات", "absences", "stats", "history"]):
+            if is_ar:
+                resp = f"""📊 <strong style="color:#a855f7; font-size:1.02rem;">إحصائيات الموظف {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    - 🟢 أيام الحضور: **{pres_cnt} يوم**<br>
+    - 🔴 أيام الغياب: **{abs_cnt} يوم**<br>
+    - ⏰ مرات التأخير (>09:15 ص): **{late_cnt} مرات**
+</div>"""
+            else:
+                resp = f"""📊 <strong style="color:#a855f7; font-size:1.02rem;">Statistics for {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.6;">
+    - 🟢 Present Days: **{pres_cnt} days**<br>
+    - 🔴 Absent Days: **{abs_cnt} days**<br>
+    - ⏰ Late Check-ins (>09:15 AM): **{late_cnt} times**
+</div>"""
+            return {"success": True, "response": resp}
+
+        # D) Full dossier / summary ("سجل", "تقرير", "شو وضع", "ملف", "dossier", "report")
+        elif any(k in query_lower for k in ["سجل", "تقرير", "شو وضع", "ملف", "تفاصيل", "dossier", "report"]):
+            resp = generate_employee_attendance_report(emp_email_clean, emp_display_name)
+            return {"success": True, "response": resp}
+
+        # E) General / Direct employee lookup (e.g. "انس احمد ؟", "anas ahmad", "علاء", "faisal?")
+        else:
+            if is_ar:
+                status_today = f"🟢 مسجل حضور اليوم في الساعة <strong style='color:#34d399;'>{t_in}</strong>" if t_in else "🔴 لم يسجل دخوله اليوم حتى الآن (غائب)"
+                resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">ملف وحالة الموظف {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.7;">
+    - 🕒 <strong>حالة اليوم ({today_str}):</strong> {status_today}<br>
+    - 🟢 <strong>أيام الحضور:</strong> {pres_cnt} يوم<br>
+    - 🔴 <strong>أيام الغياب:</strong> {abs_cnt} يوم<br>
+    - ⏰ <strong>مرات التأخير:</strong> {late_cnt} مرات
+</div>"""
+            else:
+                status_today = f"🟢 Checked in today at <strong style='color:#34d399;'>{t_in}</strong>" if t_in else "🔴 Not checked in today yet (Absent)"
+                resp = f"""👤 <strong style="color:#a855f7; font-size:1.02rem;">Status for {emp_display_name}:</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.88rem; line-height:1.7;">
+    - 🕒 <strong>Status Today ({today_str}):</strong> {status_today}<br>
+    - 🟢 <strong>Present Days:</strong> {pres_cnt} days<br>
+    - 🔴 <strong>Absent Days:</strong> {abs_cnt} days<br>
+    - ⏰ <strong>Late Check-ins:</strong> {late_cnt} times
+</div>"""
+            return {"success": True, "response": resp}
+
+    # 3.1 Admin Query: Present / Absent / Late Workforce Intelligence
+    if user_is_admin and any(k in query_lower for k in [
+        "مين موجود", "مين غايب", "مين مداوم", "مين داوم", "مين داوم اليوم", "مين اجا", "مين إجا", "مين حضر",
+        "مين داوموا", "مين شغال", "مين حاضر", "مين متأخر", "مين متاخر", "مين اتأخر", "مين إتأخر",
+        "مين تأخر اليوم", "مين تاخر اليوم", "مين عليه خصم", "who is present", "who is absent", "who is late"
+    ]):
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        emps = get_all_employees()
+        real_emps = [e for e in emps if not (e["email"].startswith("emp_") or e["email"].startswith("test_user_") or e["email"] == "test_user@nexuslink.com")]
+        today_records = fetch_query("SELECT email, type, time FROM attendance WHERE time LIKE ?", (f"{today_str}%",))
+        
+        present_dict = {}
+        for r in today_records:
+            em = r["email"].strip().lower()
+            t_type = (r["type"] or "").lower()
+            full_time = r["time"] or ""
+            t_time = full_time.split(" ")[1] if len(full_time.split(" ")) > 1 else full_time
+            if is_checkin_log(t_type) and t_time:
+                if em not in present_dict or t_time < present_dict[em]:
+                    present_dict[em] = t_time
+
+        present_names = [f"{e['name']} ({present_dict[e['email'].strip().lower()][:5]})" for e in real_emps if e["email"].strip().lower() in present_dict]
+        absent_names = [e["name"] for e in real_emps if e["email"].strip().lower() not in present_dict]
+        late_names = [f"{e['name']} ({present_dict[e['email'].strip().lower()][:5]})" for e in real_emps if e["email"].strip().lower() in present_dict and present_dict[e["email"].strip().lower()][:5] > "09:15"]
+
+        if any(k in query_lower for k in ["متأخر", "متاخر", "اتأخر", "إتأخر", "late"]):
+            title = "⏰ كشف الموظفين المتأخرين اليوم (>09:15 ص)" if is_ar else "⏰ Late Employees Today (>09:15 AM)"
+            list_str = "، ".join(late_names) if late_names else ("لا يوجد أي موظف متأخر اليوم (الجميع في الموعد) 🟢" if is_ar else "No late check-ins recorded today")
+            count_val = len(late_names)
+        elif any(k in query_lower for k in ["غايب", "ما اجا", "ما داوم", "معطل", "absent"]):
+            title = "🔴 كشف الموظفين الغائبين اليوم" if is_ar else "🔴 Absent Employees Today"
+            list_str = "، ".join(absent_names) if absent_names else ("لا يوجد غيابات مسجلة اليوم" if is_ar else "No absences recorded today")
+            count_val = len(absent_names)
+        else:
+            title = "🟢 كشف الموظفين الحاضرين اليوم" if is_ar else "🟢 Present Employees Today"
+            list_str = "، ".join(present_names) if present_names else ("لم يسجل أي موظف حضوره بعد" if is_ar else "No check-ins recorded yet")
+            count_val = len(present_names)
+
+        resp = f"""📊 <strong style="color:#a855f7; font-size:1.02rem;">{title} ({today_str}):</strong>
+<div class="ai-resp-card" style="margin-top:6px; font-size:0.86rem; line-height:1.7;">
+    <div style="font-weight:700; color:#38bdf8; margin-bottom:4px;">👥 العدد: {count_val} من أصل {len(real_emps)} موظفاً</div>
+    <div style="color:#e2e8f0;">{list_str}</div>
+</div>"""
+        return {"success": True, "response": resp}
+
+
+    # 4. Numeric Menu Quick Navigation: Section 01
+    if query in ["1", "1."]:
         if is_ar:
             resp = """📅 <strong style="color:#a855f7; font-size:1.02rem;">1. أيام وأوقات وساعات العمل الرسمية:</strong>
 <div class="ai-resp-card">
@@ -1102,8 +1443,8 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 </div>"""
         return {"success": True, "response": resp}
 
-    # 5. Section 02: Attendance & Lateness rules
-    if query == "2" or "2." in query or any(k in query_lower for k in ["الحضور والتأخير", "قوانين الحضور", "قواعد التأخير", "مهلة السماح", "فترة السماح", "خصم التأخير", "عقوبة التأخير", "خصومات", "lateness rules", "grace period", "deductions", "penalties"]):
+    # 5. Numeric Menu Quick Navigation: Section 02
+    if query in ["2", "2."]:
         if is_ar:
             resp = """⚠️ <strong style="color:#f59e0b; font-size:1.02rem;">2. قواعد التأخير وفترة السماح والخصومات:</strong>
 <div class="ai-resp-card">
@@ -1136,8 +1477,8 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 </div>"""
         return {"success": True, "response": resp}
 
-    # 6. Section 03: Attendance Logging Rules
-    if query == "3" or "3." in query or any(k in query_lower for k in ["تسجيل الدوام", "تسجيل الحضور", "تسجيل الدخول", "تسجيل الخروج", "check-in", "check-out", "logging rules", "how to log"]):
+    # 6. Numeric Menu Quick Navigation: Section 03
+    if query in ["3", "3."]:
         if is_ar:
             resp = """📝 <strong style="color:#3b82f6; font-size:1.02rem;">3. آلية وقواعد تسجيل الحضور والانصراف:</strong>
 <div class="ai-resp-card">
@@ -1170,15 +1511,15 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 </div>"""
         return {"success": True, "response": resp}
 
-    # 7. Section 04 & 05: Unified Excuse & Proof Policy (Window, Kroka & Medical)
-    if any(k in query_lower for k in ["عذر", "أعذار", "اعذار", "مهلة", "كروكة", "كروكه", "تقرير طبي", "إثبات", "اثبات", "وثائق", "شروط الإثبات", "excuse", "proof", "kroka", "medical report"]):
+    # 7. Section 04 & 05: Unified Excuse & Proof Policy
+    if query in ["4", "4."]:
         if is_ar:
             resp = """📝 <strong style="color:#c084fc; font-size:1.02rem;">ضوابط وشروط ومهلة تقديم الأعذار الذكية:</strong>
 <div class="ai-resp-card">
     <div style="background:linear-gradient(135deg, rgba(16,185,129,0.15), rgba(99,102,241,0.15)); border:1px solid rgba(16,185,129,0.35); padding:10px 14px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div>
-            <div style="font-weight:800; color:#34d399; font-size:0.95rem;">⏱️ مهلة التقديم: ساعتان فقط (2 Hours)</div>
-            <div style="font-size:0.75rem; color:#cbd5e1;">يبدأ احتساب المهلة من وقت تسجيل الدخول الفعلي</div>
+            <div style="font-weight:800; color:#34d399; font-size:0.95rem;">⏱️ مهلة التقديم: خلال ساعات الدوام (9:00 ص - 5:00 م)</div>
+            <div style="font-size:0.75rem; color:#cbd5e1;">يجب تقديم طلب العذر بنفس يوم التأخير</div>
         </div>
         <span style="font-size:1.3rem;">⏳</span>
     </div>
@@ -1192,7 +1533,7 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
             🏥 <strong>الأعذار الصحية:</strong> يشترط إرفاق <strong>تقرير طبي رسمي ومختوم</strong> من مركز صحي أو مستشفى.
         </div>
         <div style="background:rgba(30,41,59,0.7); padding:8px 10px; border-radius:8px; border-inline-start:3px solid #fbbf24;">
-            🏛️ <strong>المعاملات الرسمية:</strong> يلزم إرفاق إشعار المراجعة أو الاستدعاء الرسمي الصادر من الدائرة الحكومية.
+            🏛️ <strong>أعطال المركبات:</strong> عذر مقبول نظامياً في حال العطل المفاجئ للمركبة أثناء الطريق.
         </div>
     </div>
     
@@ -1203,8 +1544,8 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 <div class="ai-resp-card">
     <div style="background:linear-gradient(135deg, rgba(16,185,129,0.15), rgba(99,102,241,0.15)); border:1px solid rgba(16,185,129,0.35); padding:10px 14px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <div>
-            <div style="font-weight:800; color:#34d399; font-size:0.95rem;">⏱️ Submission Window: 2 Hours</div>
-            <div style="font-size:0.75rem; color:#cbd5e1;">Counted from actual check-in timestamp</div>
+            <div style="font-weight:800; color:#34d399; font-size:0.95rem;">⏱️ Submission Window: 9:00 AM to 5:00 PM</div>
+            <div style="font-size:0.75rem; color:#cbd5e1;">Must be submitted on the same day of lateness</div>
         </div>
         <span style="font-size:1.3rem;">⏳</span>
     </div>
@@ -1217,100 +1558,14 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
         <div style="background:rgba(30,41,59,0.7); padding:8px 10px; border-radius:8px; border-inline-start:3px solid #a855f7;">
             🏥 <strong>Medical:</strong> Mandatory attachment of an <strong>official stamped medical report</strong>.
         </div>
-        <div style="background:rgba(30,41,59,0.7); padding:8px 10px; border-radius:8px; border-inline-start:3px solid #fbbf24;">
-            🏛️ <strong>Official:</strong> Attach official receipt/appointment summons.
-        </div>
     </div>
     
     <button type="button" class="ai-action-btn-inline" onclick="openExcuseModalWithReason('')" style="width:100%; justify-content:center;">📝 Submit Delay Excuse & Attach Proof Now</button>
 </div>"""
         return {"success": True, "response": resp}
 
-    # 9. Smart Attendance Summary (Catch both "ملخص", "إحصائيات", "summary", "stats")
-    if any(k in query_lower for k in ["ملخص", "إحصائيات", "احصائيات", "تقرير الدوام", "حالة الحضور", "summary", "smart summary", "attendance stats", "today stats"]):
-        today_str = datetime.now().strftime("%Y-%m-%d")
-        emps = get_all_employees()
-        real_emps = [e for e in emps if not (e["email"].startswith("emp_") or e["email"].startswith("test_user_") or e["email"] == "test_user@nexuslink.com")]
-        today_records = fetch_query("SELECT email, type, time FROM attendance WHERE time LIKE ?", (f"{today_str}%",))
-        
-        present_dict = {}
-        for r in today_records:
-            em = r["email"].strip().lower()
-            t_type = (r["type"] or "").lower()
-            full_time = r["time"] or ""
-            t_time = full_time.split(" ")[1] if len(full_time.split(" ")) > 1 else full_time
-            if is_checkin_log(t_type) and t_time:
-                if em not in present_dict or t_time < present_dict[em]:
-                    present_dict[em] = t_time
-
-        late_dict = {em: tm for em, tm in present_dict.items() if is_time_after(tm, "09:15:00")}
-        severe_late_dict = {em: tm for em, tm in present_dict.items() if is_time_after(tm, "10:00:00")}
-
-        present_count = len(present_dict)
-        late_count = len(late_dict)
-        severe_late_count = len(severe_late_dict)
-        total_count = len(real_emps) or 21
-        absent_count = max(0, total_count - present_count)
-        rate = round((present_count / total_count * 100), 1) if total_count > 0 else 100.0
-
-        if is_ar:
-            resp = f"""📊 <strong style="color:#a855f7; font-size:1.05rem;">الملخص الذكي للدوام ليوم ({today_str}):</strong>
-<div class="ai-stat-grid">
-    <div class="ai-stat-item success">
-        <div class="ai-stat-num" style="color:#34d399;">{present_count} / {total_count}</div>
-        <div class="ai-stat-lbl" style="color:#a7f3d0;">🟢 الحضور اليوم</div>
-    </div>
-    <div class="ai-stat-item danger">
-        <div class="ai-stat-num" style="color:#f87171;">{absent_count}</div>
-        <div class="ai-stat-lbl" style="color:#fca5a5;">🔴 الغياب اليوم</div>
-    </div>
-    <div class="ai-stat-item warning">
-        <div class="ai-stat-num" style="color:#fbbf24;">{late_count}</div>
-        <div class="ai-stat-lbl" style="color:#fde68a;">⏰ متأخر (>09:15)</div>
-    </div>
-    <div class="ai-stat-item danger">
-        <div class="ai-stat-num" style="color:#f87171;">{severe_late_count}</div>
-        <div class="ai-stat-lbl" style="color:#fca5a5;">🚨 تأخير شديد (>10:00)</div>
-    </div>
-</div>
-<div class="ai-resp-card" style="margin-top:4px;">
-    <div style="font-size:0.82rem; line-height:1.7;">
-        📈 <strong>نسبة الحضور والالتزام:</strong> <strong style="color:#34d399;">{rate}%</strong> <br>
-        💼 <strong>إجمالي الخصومات المستحقة اليوم:</strong> <strong style="color:#f87171;">{severe_late_count * 0.5} يوم راتب</strong> <br>
-        💡 <em>سياسة الدوام تشترط الحضور قبل 09:15 ص لتجنب احتساب التأخير.</em>
-    </div>
-</div>"""
-        else:
-            resp = f"""📊 <strong style="color:#a855f7; font-size:1.05rem;">Today's Smart Attendance Summary ({today_str}):</strong>
-<div class="ai-stat-grid">
-    <div class="ai-stat-item success">
-        <div class="ai-stat-num" style="color:#34d399;">{present_count} / {total_count}</div>
-        <div class="ai-stat-lbl" style="color:#a7f3d0;">🟢 Present Today</div>
-    </div>
-    <div class="ai-stat-item danger">
-        <div class="ai-stat-num" style="color:#f87171;">{absent_count}</div>
-        <div class="ai-stat-lbl" style="color:#fca5a5;">🔴 Absent Today</div>
-    </div>
-    <div class="ai-stat-item warning">
-        <div class="ai-stat-num" style="color:#fbbf24;">{late_count}</div>
-        <div class="ai-stat-lbl" style="color:#fde68a;">⏰ Late (>09:15)</div>
-    </div>
-    <div class="ai-stat-item danger">
-        <div class="ai-stat-num" style="color:#f87171;">{severe_late_count}</div>
-        <div class="ai-stat-lbl" style="color:#fca5a5;">🚨 Severe (>10:00)</div>
-    </div>
-</div>
-<div class="ai-resp-card" style="margin-top:4px;">
-    <div style="font-size:0.82rem; line-height:1.7;">
-        📈 <strong>Shift Compliance Rate:</strong> <strong style="color:#34d399;">{rate}%</strong> <br>
-        💼 <strong>Total Pending Deductions:</strong> <strong style="color:#f87171;">{severe_late_count * 0.5} Day Salary</strong> <br>
-        💡 <em>Policy requires checking in before 09:15 AM to avoid penalties.</em>
-    </div>
-</div>"""
-        return {"success": True, "response": resp}
-
-    # 10. Employee asking about their own logs / personal status
-    if any(k in query_lower for k in ["تأخر", "غياب", "سجل", "حضوري", "تأخيري", "حالة دوامي", "هل أنا متأخر", "late", "absent", "my status", "my log", "am i late"]):
+    # 8. Employee asking about their personal logs / status
+    if any(k in query_lower for k in ["هل أنا متأخر", "هل انا متاخر", "سجل دوامي", "حضوري اليوم", "تأخيري", "حالة دوامي", "am i late", "my attendance", "my log"]):
         if not user_email:
             reply = "الرجاء تسجيل الدخول أولاً للتحقق من سجلك الشخصي." if is_ar else "Please log in first to check your personal attendance status."
             return {"success": True, "response": reply}
@@ -1329,7 +1584,7 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
         تم تسجيل دخولك في الساعة: <strong style="color:#fbbf24;">{checkin_time}</strong>
     </div>
     <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); padding:8px 12px; border-radius:8px; color:#fca5a5; font-size:0.82rem; margin-bottom:8px;">
-        ⚠️ <strong>تأخير مسجل:</strong> وقت الدخول بعد انتهاء فترة السماح (09:15 ص). يرجى تقديم عذر رسمي خلال ساعتين لتفادي الخصم.
+        ⚠️ <strong>تأخير مسجل:</strong> وقت الدخول بعد انتهاء فترة السماح (09:15 ص). يرجى تقديم عذر رسمي لتفادي الخصم.
     </div>
     <button type="button" class="ai-action-btn-inline" onclick="openExcuseModalWithReason('تأخير بعد انتهاء فترة السماح')">📝 تقديم عذر التأخير الآن</button>
 </div>"""
@@ -1340,7 +1595,7 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
         Checked in today at: <strong style="color:#fbbf24;">{checkin_time}</strong>
     </div>
     <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); padding:8px 12px; border-radius:8px; color:#fca5a5; font-size:0.82rem; margin-bottom:8px;">
-        ⚠️ <strong>Lateness Recorded:</strong> You checked in past the 09:15 AM grace window. Please submit an excuse within 2 hours.
+        ⚠️ <strong>Lateness Recorded:</strong> You checked in past the 09:15 AM grace window. Please submit an excuse.
     </div>
     <button type="button" class="ai-action-btn-inline" onclick="openExcuseModalWithReason('Late Check-In past grace window')">📝 Submit Delay Excuse Now</button>
 </div>"""
@@ -1382,42 +1637,33 @@ async def ai_chat(data: AIChatRequest, current_user: Optional[dict] = Depends(ge
 </div>"""
         return {"success": True, "response": reply}
 
-    # 11. General Policy QA fallback (RAG match) with rich card styling
-    chunks = retrieve_relevant_chunks(query, top_k=2)
-    if chunks:
-        rendered_cards = []
-        for c in chunks:
-            raw_title = c.get('title_ar' if is_ar else 'title_en', c.get('title', 'Policy'))
-            raw_content = c.get('content', '').strip()
-            # Clean duplicate titles in content
-            lines = [l.strip() for l in raw_content.split('\n') if l.strip() and not l.strip().startswith('عنوان البند:')]
-            cleaned_body = '<br>'.join(lines)
-            card_html = f"""<div style="background:rgba(30,41,59,0.7); border:1px solid rgba(168,85,247,0.25); border-inline-start:3px solid #a855f7; border-radius:10px; padding:10px 12px; margin-bottom:8px;">
-    <div style="font-weight:700; color:#c084fc; font-size:0.88rem; margin-bottom:6px;">📌 {raw_title}</div>
-    <div style="font-size:0.83rem; color:#e2e8f0; line-height:1.6;">{cleaned_body}</div>
-</div>"""
-            rendered_cards.append(card_html)
-        
-        policy_cards_html = "".join(rendered_cards)
-        citation = "📚 <em>مستند إلى لائحة العمل وسياسات الحضور المعتمدة في الشركة (policy.text)</em>" if is_ar else "📚 <em>Grounded in official company attendance policy documentation (policy.text)</em>"
-        
-        if is_ar:
-            reply = f"""🤖 <strong style="color:#a855f7; font-size:1.02rem;">إجابة معتمدة ومطابقة للائحة الدوام:</strong>
-<div class="ai-resp-card" style="margin-top:6px;">
-{policy_cards_html}
-<div style="font-size:0.75rem; color:#94a3b8; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;">
-    {citation}
-</div>
-</div>"""
-        else:
-            reply = f"""🤖 <strong style="color:#a855f7; font-size:1.02rem;">Response Based on Official Attendance Policy:</strong>
-<div class="ai-resp-card" style="margin-top:6px;">
-{policy_cards_html}
-<div style="font-size:0.75rem; color:#94a3b8; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;">
-    {citation}
-</div>
-</div>"""
-        return {"success": True, "response": reply}
+    # 9. Natural Language Policy QA: Direct, concise, question-targeted answering with crisp source badge
+    user_logs_summary = get_user_summary_context(user_email, curr_dict)
+    team_stats = None
+    if user_is_admin:
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        emps = get_all_employees()
+        real_emps = [e for e in emps if not (e["email"].startswith("emp_") or e["email"].startswith("test_user_") or e["email"] == "test_user@nexuslink.com")]
+        today_records = fetch_query("SELECT email, type, time FROM attendance WHERE time LIKE ?", (f"{today_str}%",))
+        pres_emails = {r["email"].strip().lower() for r in today_records if is_checkin_log((r["type"] or "").lower())}
+        team_stats = {
+            "total_count": len(real_emps),
+            "present_count": len([e for e in real_emps if e["email"].strip().lower() in pres_emails]),
+            "absent_count": len([e for e in real_emps if e["email"].strip().lower() not in pres_emails])
+        }
+
+    qa_res = answer_qa_with_sources(
+        question=query,
+        user_email=user_email,
+        user_role="admin" if user_is_admin else ("employee" if user_email else "guest"),
+        user_logs_summary=user_logs_summary,
+        team_stats_summary=team_stats,
+        lang="ar" if is_ar else "en",
+        chat_history=data.history or []
+    )
+    if qa_res.get("answer"):
+        return {"success": True, "response": qa_res['answer']}
+
 
     if is_ar:
         reply = """🤖 <strong style='color:#6366f1; font-size:1.02rem;'>مساعد NexusLink الذكي</strong>
